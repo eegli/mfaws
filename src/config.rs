@@ -34,6 +34,7 @@ pub struct Config {
     pub short_term_suffix: String,
     #[arg(
         long,
+        env = "AWS_SHARED_CREDENTIALS_FILE",
         global = true,
         default_value = ".aws/credentials",
         help = "Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file"
