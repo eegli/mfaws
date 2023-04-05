@@ -110,7 +110,7 @@ In your terminal: Run:
 mfaws help
 ```
 
-**mfaws** allows you to customize many things, including the duration of the temporary credentials or the short-term suffix that is used to generate short-term profiles. Many values can also be read from the corresponding environment variables.
+**mfaws** allows you to customize many things, including the duration of the temporary credentials, the short-term suffix that is used to generate short-term profiles or the path to the credentials file. Many values can also be read from the corresponding environment variables.
 
 ```shell
 Usage: mfaws [OPTIONS] <COMMAND>
