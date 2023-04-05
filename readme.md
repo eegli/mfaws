@@ -32,7 +32,7 @@ cargo install mfaws
 
 ## Credentials File
 
-Let's assume you have the following AWS credentials file in `~/.aws/credentials`. It has a single long-term profile, `dev`, which can be used to generate short-term profiles.
+Let's assume you have the following AWS credentials file in `~/.aws/credentials`. It has a single _long-term_ profile, `dev`, which can be used to generate _short-term_ profiles. Short-term profiles are identified by the `-short-term` suffix (or a custom one that you provide). Short-term profiles are generated automatically and should not be fiddled with manually.
 
 ```ini
 [dev]
@@ -51,7 +51,7 @@ aws_secret_access_key=qAnFonnuEUqp
 mfaws session-token --profile dev --device arn:aws:iam::3687901:mfa/my-mfa-device
 ```
 
-**mfaws** automatically generates and adds the following profile to your AWS credentials file:
+**mfaws** automatically generates and adds the following short-term profile to your AWS credentials file:
 
 ```ini
 [dev]

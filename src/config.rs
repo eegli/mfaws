@@ -27,7 +27,7 @@ pub struct Config {
         long = "short-term-suffix",
         global = true,
         default_value = "short-term",
-        help = "To identify the auto-generated short term credential profile by [<profile_name>-SHORT_TERM_SUFFIX]."
+        help = "To identify the auto-generated short-term credential profile by [<profile_name>-SHORT_TERM_SUFFIX]."
     )]
     pub short_term_suffix: String,
 }
@@ -35,7 +35,7 @@ pub struct Config {
 impl Config {
     pub fn validate(self) -> anyhow::Result<Self> {
         if self.profile_name.ends_with(&self.short_term_suffix) {
-            anyhow::bail!("The profile name cannot end with the short term suffix.");
+            anyhow::bail!("The profile name cannot end with the short-term suffix.");
         }
         Ok(self)
     }
