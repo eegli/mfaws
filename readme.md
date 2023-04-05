@@ -160,7 +160,6 @@ Options:
 
 ## Roadmap and Todos
 
-- Customization of the location of the AWS credentials file, which is currently fixed to `~/.aws/credentials`
 - As of now, all requests to STS hit `us-east-1` instead of a regional endpoint. Millisecond latency does not really matter for this tool, but it'd be nice being able to specify a custom regional endpoint (or read it from `~/.aws/conf`)
 
 ## Migrating from `aws-mfa`: What's different?
