@@ -1,6 +1,6 @@
 # mfaws
 
-A CLI tool to easily manage AWS credentials for MFA-enabled accounts. **mfaws** talks to the [AWS Security Token Service API](https://docs.aws.amazon.com/STS/latest/APIReference/welcome.html) and allows you to obtain temporary credentials using your AWS access key, AWS secret key and MFA device.
+A cross-platform CLI tool to easily manage AWS credentials for MFA-enabled accounts. **mfaws** talks to the [AWS Security Token Service API](https://docs.aws.amazon.com/STS/latest/APIReference/welcome.html) and allows you to obtain temporary credentials using your AWS access key, AWS secret key and MFA device.
 
 Supported STS operations:
 
@@ -158,15 +158,23 @@ Options:
           Print version
 ```
 
+## Roadmap and Todos
+
+- As of now, all requests to STS hit `us-east-1` instead of a regional endpoint. Millisecond latency does not really matter for this tool, but it'd be nice being able to specify a custom regional endpoint (or read it from `~/.aws/conf`)
+
 ## Migrating from `aws-mfa`: What's different?
 
 1. By default, all profiles are considered long-term profiles unless they end with the short term suffix set by `--short-term-suffix [SHUFFIX]`. There is no such thing as an _explicit_ long-term suffix (hence, also no `--long-term-suffix` flag)
-2. `--role-session-name [NAME]` does not use the [login name of your user](https://docs.python.org/3/library/getpass.html) by default but the static string `mfa-user`
+2. Unlike `aws-mfa`, where actions (AssumeRole/GetSessionToken) are implicitly given by the presence of the `--assume-role` flag, **mfaws** has dedicated sub-commands for each operation
+3. `--assume-role` is `--role-arn`
+4. `--role-session-name [NAME]` does not use the [login name of your user](https://docs.python.org/3/library/getpass.html) by default but the static string `mfa-user`
 
 ## Contributing and Notes
 
-- TODO
+At this point, **mfaws** is merely out of its "alpha" stage and, although stable, lacks a lot cruical properties. There's no testing strategy, no integration/e2e tests 😢.
+
+I'm still a complete beginner with Rust, and suggestions on how to improve this project and make things prettier are very welcome! Of course, I'm also very happy for general feedback, bugfixes and feature ideas.
 
 ## Acknowledgements
 
-- [broamski](https://github.com/broamski) for the MIT license of [aws-mfa](https://github.com/broamski/aws-mfa). The general idea for this tool and much of the help command descriptions were stolen from his work.
+- [broamski](https://github.com/broamski) for the MIT license of [`aws-mfa`](https://github.com/broamski/aws-mfa). The general idea for this tool and much of the help command descriptions were stolen from his work.
