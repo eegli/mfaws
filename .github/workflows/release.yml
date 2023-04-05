@@ -3,7 +3,7 @@ on:
     types: [created]
 
 jobs:
-  release-binaries:
+  release:
     name: release ${{ matrix.target }}
     runs-on: ubuntu-latest
     strategy:
