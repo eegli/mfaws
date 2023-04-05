@@ -7,9 +7,10 @@ Supported STS operations:
 - AssumeRole
 - GetSessionToken
 
-**mfaws** is heavily inspired by [`aws-mfa`](https://github.com/broamski/aws-mfa), with two key differences:
+**mfaws** is heavily inspired by [`aws-mfa`](https://github.com/broamski/aws-mfa), with a few key differences:
 
 - Assume multiple short-term profiles for a single long-term profile
+- Custom credentials file location
 - A single native binary - no dependency on Python
 
 If you're migrating and curious, read the section about the differences: [Migrating from `aws-mfa`: What's different?](#migrating-from-aws-mfa-whats-different)
@@ -104,7 +105,7 @@ You might want to run it manually the first time to see what name is generated f
 
 ## Full Usage
 
-In your terminal: Run:
+In your terminal, run:
 
 ```
 mfaws help
