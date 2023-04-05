@@ -5,14 +5,14 @@ pub struct Config {
         env = "AWS_PROFILE",
         global = true,
         default_value = "default",
-        help = "The AWS credentials profile to use."
+        help = "The AWS credentials profile to use"
     )]
     pub profile_name: String,
     #[arg(
         long = "device",
         env = "MFA_DEVICE",
         global = true,
-        help = "The MFA Device ARN. This value can also be provided via the ~/.aws/credentials variable 'aws_mfa_device'."
+        help = "The MFA Device ARN. This value can also be provided via the ~/.aws/credentials variable 'aws_mfa_device'"
     )]
     pub mfa_device: Option<String>,
     #[arg(
@@ -20,14 +20,14 @@ pub struct Config {
         env = "MFA_STS_DURATION",
         global = true,
         help = "The duration, in seconds, for which the temporary credentials should remain valid",
-        long_help = "The duration, in seconds, for which the temporary credentials should remain valid. Defaults to 43200 (12 hours) for session tokens and 3600 (one hour) when assuming a role."
+        long_help = "The duration, in seconds, for which the temporary credentials should remain valid. Defaults to 43200 (12 hours) for session tokens and 3600 (one hour) when assuming a role"
     )]
     pub duration: Option<i32>,
     #[arg(
         long = "short-term-suffix",
         global = true,
         default_value = "short-term",
-        help = "To identify the auto-generated short-term credential profile by [<profile_name>-SHORT_TERM_SUFFIX]."
+        help = "To identify the auto-generated short-term credential profile by [<profile_name>-SHORT_TERM_SUFFIX]"
     )]
     pub short_term_suffix: String,
 }
