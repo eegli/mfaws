@@ -117,31 +117,31 @@ Usage: mfaws [OPTIONS] <COMMAND>
 
 Commands:
   assume-role
-
+          Temporary credentials for an assumed AWS IAM Role
   session-token
-
+          Temporary credentials for an AWS IAM user
   help
           Print this message or the help of the given subcommand(s)
 
 Options:
       --profile <PROFILE_NAME>
-          The AWS credentials profile to use.
+          The AWS credentials profile to use
 
           [env: AWS_PROFILE=]
           [default: default]
 
       --device <MFA_DEVICE>
-          The MFA Device ARN. This value can also be provided via the ~/.aws/credentials variable 'aws_mfa_device'.
+          The MFA Device ARN. This value can also be provided via the ~/.aws/credentials variable 'aws_mfa_device'
 
           [env: MFA_DEVICE=]
 
       --duration <DURATION>
-          The duration, in seconds, for which the temporary credentials should remain valid. Defaults to 43200 (12 hours) for session tokens and 3600 (one hour) when assuming a role.
+          The duration, in seconds, for which the temporary credentials should remain valid. Defaults to 43200 (12 hours) for session tokens and 3600 (one hour) when assuming a role
 
           [env: MFA_STS_DURATION=]
 
       --short-term-suffix <SHORT_TERM_SUFFIX>
-          To identify the auto-generated short term credential profile by [<profile_name>-SHORT_TERM_SUFFIX].
+          To identify the auto-generated short-term credential profile by [<profile_name>-SHORT_TERM_SUFFIX]
 
           [default: short-term]
 
