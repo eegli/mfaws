@@ -24,7 +24,11 @@ If you're migrating and curious, read the section about the differences: [Migrat
 cargo install mfaws
 ```
 
-- From GitHub: Download the latest binary from the [release page](https://github.com/eegli/mfaws/releases/latest), extract id and add it to your `PATH`
+- From GitHub:
+
+1. Download the latest binary from the [release page](https://github.com/eegli/mfaws/releases/latest)
+2. Extract it
+3. Add it to your `PATH`
 
 ## Credentials File
 
@@ -83,6 +87,8 @@ aws_access_key_id=ASINQT6HE6ZCS
 aws_secret_access_key=iqVoWOI8+l6WVBn8pdCc/JxJ6
 aws_session_token=IQoJb3JpZ2luXS4VhObxKg6p79Pm38C4ahGqcGKw==
 ```
+
+Whenever you run an operation, **mfaws** checks your existing short-term profiles to see if there is still a valid (i.e., not yet expired) profile around. If that is the case, the operation is gracefully aborted and you'll be notified.
 
 ## Shell Aliases
 
