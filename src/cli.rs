@@ -4,9 +4,15 @@ use clap::Parser;
 
 #[derive(clap::Parser, Debug)]
 pub enum SubCommand {
-    #[clap(name = "assume-role")]
+    #[clap(
+        name = "assume-role",
+        about = "Temporary credentials for an assumed AWS IAM Role"
+    )]
     AssumeRole(cmds::AssumeRole),
-    #[clap(name = "session-token")]
+    #[clap(
+        name = "session-token",
+        about = "Temporary credentials for an AWS IAM user"
+    )]
     GetSessionToken(cmds::SessionToken),
 }
 
