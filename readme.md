@@ -152,6 +152,10 @@ Options:
           Print version
 ```
 
+## Roadmap and Todos
+
+- As of now, all requests to STS hit `us-east-1` instead of a regional endpoint. Millisecond latency does not really matter for this tool, but it'd be nice being able to specify a custom regional endpoint (or read it from `~/.aws/conf`)
+
 ## Migrating from `aws-mfa`: What's different?
 
 1. By default, all profiles are considered long-term profiles unless they end with the short term suffix set by `--short-term-suffix [SHUFFIX]`. There is no such thing as an _explicit_ long-term suffix (hence, also no `--long-term-suffix` flag)
