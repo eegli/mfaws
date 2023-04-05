@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 #[derive(clap::Parser, Debug, Default)]
 pub struct Config {
     #[arg(
@@ -30,14 +32,37 @@ pub struct Config {
         help = "To identify the auto-generated short-term credential profile by [<profile_name>-SHORT_TERM_SUFFIX]"
     )]
     pub short_term_suffix: String,
+    #[arg(
+        long,
+        global = true,
+        default_value = ".aws/credentials",
+        help = "Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file"
+    )]
+    pub credentials: PathBuf,
 }
 
 impl Config {
-    pub fn validate(self) -> anyhow::Result<Self> {
+    pub fn init(&mut self) -> anyhow::Result<()> {
+        self.validate_profile_name()?;
+        self.validate_credentials_path()?;
+        Ok(())
+    }
+
+    fn validate_profile_name(&self) -> anyhow::Result<()> {
         if self.profile_name.ends_with(&self.short_term_suffix) {
-            anyhow::bail!("The profile name cannot end with the short-term suffix.");
+            anyhow::bail!("The profile name cannot end with the short-term suffix");
         }
-        Ok(self)
+        Ok(())
+    }
+
+    fn validate_credentials_path(&mut self) -> anyhow::Result<()> {
+        if self.credentials.is_relative() {
+            self.credentials = dirs::home_dir().unwrap().join(self.credentials.as_path());
+        }
+        if !self.credentials.is_file() {
+            anyhow::bail!("The credentials file does not exist");
+        }
+        Ok(())
     }
 }
 
@@ -46,21 +71,16 @@ mod test_config {
     use super::*;
 
     #[test]
-    fn test_config_validate() {
-        let config = Config {
+    fn validate_profile_name() {
+        let mut config = Config {
             profile_name: "default".to_string(),
-            mfa_device: None,
-            duration: None,
             short_term_suffix: "short-term".to_string(),
+            ..Default::default()
         };
-        assert!(config.validate().is_ok());
 
-        let config = Config {
-            profile_name: "default-short-term".to_string(),
-            mfa_device: None,
-            duration: None,
-            short_term_suffix: "short-term".to_string(),
-        };
-        assert!(config.validate().is_err());
+        assert!(config.validate_profile_name().is_ok());
+
+        config.profile_name = "default-short-term".to_string();
+        assert!(config.validate_profile_name().is_err());
     }
 }

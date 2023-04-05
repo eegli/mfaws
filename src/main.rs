@@ -17,8 +17,8 @@ extern crate log;
 
 async fn run() -> Result<()> {
     let creds_file = dirs::home_dir().unwrap().join(".aws/credentials");
-    let cli = cli::parse();
-    let (command, config) = (cli.command, cli.config.validate()?);
+
+    let (command, config) = cli::parse()?;
 
     let mut creds_handler = CredentialsHandler::from_file(&creds_file)?;
 
