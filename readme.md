@@ -145,6 +145,12 @@ Options:
 
           [default: short-term]
 
+      --credentials <CREDENTIALS>
+          Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file
+
+          [env: AWS_SHARED_CREDENTIALS_FILE=]
+          [default: .aws/credentials]
+
   -h, --help
           Print help (see a summary with '-h')
 

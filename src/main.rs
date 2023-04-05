@@ -16,11 +16,9 @@ use crate::{cli::SubCommand, profile::ProfileName};
 extern crate log;
 
 async fn run() -> Result<()> {
-    let creds_file = dirs::home_dir().unwrap().join(".aws/credentials");
-    let cli = cli::parse();
-    let (command, config) = (cli.command, cli.config.validate()?);
+    let (command, config) = cli::parse()?;
 
-    let mut creds_handler = CredentialsHandler::from_file(&creds_file)?;
+    let mut creds_handler = CredentialsHandler::from_file(config.credentials.as_path())?;
 
     let lt_profile = creds_handler.get_long_term_profile(&config)?;
 
@@ -51,7 +49,9 @@ async fn run() -> Result<()> {
     };
 
     creds_handler.set_short_term_profile(&st_profile, &st_profile_name);
-    creds_handler.0.write_to_file(&creds_file)?;
+    creds_handler
+        .0
+        .write_to_file(config.credentials.as_path())?;
 
     info!(
         "Successfully added short-term credentials \"{}\"",

@@ -25,6 +25,9 @@ pub struct Cli {
     pub config: Config,
 }
 
-pub fn parse() -> Cli {
-    Cli::parse()
+pub fn parse() -> anyhow::Result<(SubCommand, Config)> {
+    let cli = Cli::parse();
+    let (command, mut config) = (cli.command, cli.config);
+    config.init()?;
+    Ok((command, config))
 }
