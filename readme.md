@@ -161,7 +161,9 @@ Options:
 
 ## Contributing and Notes
 
-- TODO
+At this point, **mfaws** is merely out of its "alpha" stage and, although stable, lacks a lot cruical properties. There's no testing strategy, no integration/e2e tests 😢.
+
+I'm still a complete beginner with Rust, and suggestions on how to improve this project and make things prettier are very welcome! Of course, I'm also very happy for general feedback, bugfixes and feature ideas.
 
 ## Acknowledgements
 
