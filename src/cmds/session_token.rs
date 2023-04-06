@@ -1,10 +1,9 @@
-use async_trait::async_trait;
-
 use crate::{
     config::Config,
     profile::{LongTermProfile, ProfileName, ShortTermProfile},
     sts::{extract_sts_err, StsAction},
 };
+use async_trait::async_trait;
 
 #[derive(clap::Parser, Debug, Default)]
 pub struct SessionToken;
@@ -33,7 +32,7 @@ impl<'a> StsAction for &'a SessionToken {
             .get_session_token()
             .serial_number(lt_profile.mfa_device.to_string())
             .duration_seconds(config.duration.unwrap_or(Self::DEFAULT_DURATION))
-            .token_code(mfa_token.to_string())
+            .token_code(mfa_token)
             .send()
             .await
             .map_err(extract_sts_err)?;
