@@ -30,11 +30,19 @@ async fn run() -> Result<()> {
     };
 
     if let Some(remaining_time) = creds_handler.is_profile_still_valid(&st_profile_name) {
-        info!(
-            "Found existing short-term profile \"{}\" that is valid for the next {}",
-            st_profile_name, remaining_time
-        );
-        return Ok(());
+        match config.force_new_credentials {
+            false => {
+                info!(
+                    "Found existing short-term profile \"{}\" that is valid for the next {}",
+                    st_profile_name, remaining_time
+                );
+                return Ok(());
+            }
+            true => info!(
+                "Discarding existing short-term profile \"{}\" (--force was used)",
+                st_profile_name,
+            ),
+        }
     };
 
     let st_profile = match command {

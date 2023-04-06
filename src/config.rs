@@ -40,6 +40,13 @@ pub struct Config {
         help = "Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file"
     )]
     pub credentials: PathBuf,
+    #[arg(
+        long = "force",
+        global = true,
+        default_value = "false",
+        help = "Force the creation of a new short-term profile even if one already exists"
+    )]
+    pub force_new_credentials: bool,
 }
 
 impl Config {
