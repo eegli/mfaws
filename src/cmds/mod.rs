@@ -1,5 +1,45 @@
-mod assume_role;
-mod session_token;
+pub mod clear;
+pub mod sts;
 
-pub use assume_role::AssumeRole;
-pub use session_token::SessionToken;
+use async_trait::async_trait;
+
+use crate::config::Config;
+
+#[async_trait]
+pub trait Command {
+    async fn exec(&self, config: &Config) -> anyhow::Result<()>;
+}
+
+// All subcommands
+#[derive(clap::Parser, Debug)]
+pub enum SubCommand {
+    #[clap(flatten)]
+    StsCommand(StsCommand),
+    #[clap(
+        name = "clear",
+        about = "Remove all temporary profiles from your credentials"
+    )]
+    Clear(clear::Clear),
+}
+
+// STS-specific commands
+#[derive(clap::Parser, Debug)]
+pub enum StsCommand {
+    #[clap(
+        name = "assume-role",
+        about = "Temporary credentials for an assumed AWS IAM Role"
+    )]
+    AssumeRole(sts::AssumeRole),
+    #[clap(
+        name = "session-token",
+        about = "Temporary credentials for an AWS IAM user"
+    )]
+    GetSessionToken(sts::SessionToken),
+}
+
+#[async_trait]
+impl Command for StsCommand {
+    async fn exec(&self, config: &Config) -> anyhow::Result<()> {
+        self.get_credentials(config).await
+    }
+}

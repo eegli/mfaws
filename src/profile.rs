@@ -1,6 +1,7 @@
-use crate::config::Config;
-use aws_sdk_sts::primitives::DateTime as AwsDateTime;
+use aws_config::ConfigLoader;
+use aws_credential_types::Credentials;
 use aws_sdk_sts::types::Credentials as StsCredentials;
+use aws_sdk_sts::{primitives::DateTime as AwsDateTime, Client};
 use aws_smithy_types::date_time::{ConversionError, DateTimeParseError, Format};
 use std::{borrow::Cow, ops::Deref, str::FromStr, time::SystemTime};
 
@@ -37,10 +38,6 @@ pub trait Profile {
 impl<'a> Profile for LongTermProfile<'a> {}
 impl<'a> Profile for ShortTermProfile<'a> {}
 
-pub trait ProfileName {
-    fn short_profile_name(&self, config: &Config) -> String;
-}
-
 impl Default for DateTime {
     fn default() -> Self {
         Self(AwsDateTime::from_secs(0))
@@ -65,6 +62,19 @@ impl TryFrom<DateTime> for SystemTime {
     type Error = ConversionError;
     fn try_from(value: DateTime) -> Result<Self, Self::Error> {
         Ok(value.0.try_into()?)
+    }
+}
+
+impl<'a> LongTermProfile<'a> {
+    pub async fn create_client(&self) -> Client {
+        let credentials =
+            Credentials::from_keys(self.access_key.clone(), self.secret_key.clone(), None);
+        let conf = ConfigLoader::default()
+            .credentials_provider(credentials)
+            .region("us-east-1")
+            .load()
+            .await;
+        Client::new(&conf)
     }
 }
 
