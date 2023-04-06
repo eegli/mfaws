@@ -58,7 +58,9 @@ impl Config {
 
     fn validate_credentials_path(&mut self) -> anyhow::Result<()> {
         if self.credentials.is_relative() {
-            self.credentials = dirs::home_dir().unwrap().join(self.credentials.as_path());
+            self.credentials = dirs::home_dir()
+                .expect("Cannot find home directory")
+                .join(self.credentials.as_path());
         }
         if !self.credentials.is_file() {
             anyhow::bail!("The credentials file does not exist");

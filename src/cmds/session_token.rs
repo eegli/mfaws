@@ -1,10 +1,9 @@
-use async_trait::async_trait;
-
 use crate::{
     config::Config,
     profile::{LongTermProfile, ProfileName, ShortTermProfile},
     sts::{extract_sts_err, StsAction},
 };
+use async_trait::async_trait;
 
 #[derive(clap::Parser, Debug, Default)]
 pub struct SessionToken;
@@ -16,8 +15,11 @@ impl ProfileName for SessionToken {
 }
 
 #[async_trait]
-impl StsAction for SessionToken {
-    type Output = ShortTermProfile;
+impl<'a> StsAction for &'a SessionToken {
+    type Output = ShortTermProfile<'a>;
+
+    const DEFAULT_DURATION: i32 = 43200;
+
     async fn execute(
         &self,
         config: &Config,
@@ -28,13 +30,13 @@ impl StsAction for SessionToken {
             .create_client()
             .await
             .get_session_token()
-            .serial_number(lt_profile.mfa_device.clone())
-            .duration_seconds(config.duration.unwrap_or(43200))
-            .token_code(mfa_token.to_string())
+            .serial_number(lt_profile.mfa_device.to_string())
+            .duration_seconds(config.duration.unwrap_or(Self::DEFAULT_DURATION))
+            .token_code(mfa_token)
             .send()
             .await
             .map_err(extract_sts_err)?;
-        let short_term_profile = ShortTermProfile::try_from(output.credentials())?;
+        let short_term_profile = ShortTermProfile::try_from(output.credentials)?;
         Ok(short_term_profile)
     }
 }

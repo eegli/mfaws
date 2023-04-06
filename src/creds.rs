@@ -4,9 +4,10 @@ use crate::{
     utils::get_remaining_time,
 };
 use ini::{Ini, Properties};
-use std::path::Path;
+use std::{borrow::Cow, path::Path};
 use std::{fmt::Debug, time::SystemTime};
 use thiserror::Error;
+
 pub struct CredentialsHandler(pub Ini);
 
 impl CredentialsHandler {
@@ -21,10 +22,10 @@ impl CredentialsHandler {
         Ok(Self(Ini::load_from_file(path)?))
     }
 
-    pub fn get_long_term_profile(
-        &self,
-        conf: &Config,
-    ) -> Result<LongTermProfile, CredentialsError> {
+    pub fn get_long_term_profile<'a>(
+        &'a self,
+        conf: &'a Config,
+    ) -> Result<LongTermProfile<'a>, CredentialsError> {
         let profile = &conf.profile_name;
         let sections = self
             .0
@@ -37,15 +38,15 @@ impl CredentialsHandler {
             1 => {
                 let section = sections[0];
                 let mut pf = LongTermProfile {
-                    name: profile.to_owned(),
+                    name: Cow::Borrowed(profile),
                     ..Default::default()
                 };
                 match section.get(LongTermProfile::ACCESS_KEY) {
-                    Some(access_key) => pf.access_key = access_key.to_owned(),
+                    Some(access_key) => pf.access_key = Cow::Borrowed(access_key),
                     None => Err(CredentialsError::NoAccessKey(profile.to_owned()))?,
                 }
                 match section.get(LongTermProfile::SECRET_KEY) {
-                    Some(secret_key) => pf.secret_key = secret_key.to_owned(),
+                    Some(secret_key) => pf.secret_key = Cow::Borrowed(secret_key),
                     None => Err(CredentialsError::NoSecretKey(profile.to_owned()))?,
                 }
                 match conf
@@ -53,7 +54,7 @@ impl CredentialsHandler {
                     .as_deref()
                     .or(section.get(LongTermProfile::MFA_DEVICE))
                 {
-                    Some(mfa_device) => pf.mfa_device = mfa_device.to_owned(),
+                    Some(mfa_device) => pf.mfa_device = Cow::Borrowed(mfa_device),
                     None => Err(CredentialsError::NoMfaDevice(profile.to_owned()))?,
                 }
 
@@ -80,7 +81,7 @@ impl CredentialsHandler {
             self.0.set_to(
                 Some(profile_name),
                 LongTermProfile::ASSUMED_ROLE_ARN.to_owned(),
-                arn.to_owned(),
+                arn.to_string(),
             );
         }
 
@@ -242,7 +243,7 @@ mod test_short_term_profile {
         let mut handler = CredentialsHandler::_new("").unwrap();
         let profile = ShortTermProfile {
             assumed_role_id: Some("id".to_owned()),
-            assumed_role_arn: Some("arn".to_owned()),
+            assumed_role_arn: Some(Cow::Owned("arn".to_owned())),
             ..Default::default()
         };
         let profile_name = "test";
