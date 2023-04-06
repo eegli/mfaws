@@ -16,10 +16,10 @@ pub enum SubCommand {
     #[clap(flatten)]
     StsCommand(StsCommand),
     #[clap(
-        name = "clear",
+        name = "clean",
         about = "Remove all temporary profiles from your credentials"
     )]
-    Clear(clear::Clear),
+    Clean(clear::Clean),
 }
 
 // STS-specific commands

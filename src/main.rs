@@ -18,7 +18,7 @@ async fn run() -> Result<()> {
     match command {
         // Sts commands are further delegated
         SubCommand::StsCommand(cmd) => cmd.exec(&config).await?,
-        SubCommand::Clear(cmd) => cmd.exec(&config).await?,
+        SubCommand::Clean(cmd) => cmd.exec(&config).await?,
     };
 
     Ok(())

@@ -8,7 +8,14 @@ use std::{borrow::Cow, path::Path};
 use std::{fmt::Debug, time::SystemTime};
 use thiserror::Error;
 
+#[derive(Default)]
 pub struct CredentialsHandler(pub Ini);
+
+impl Debug for CredentialsHandler {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "[Placeholder]")
+    }
+}
 
 impl CredentialsHandler {
     pub fn _new(buf: &str) -> Result<Self, ini::ParseError> {

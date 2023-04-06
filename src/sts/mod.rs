@@ -1,6 +1,5 @@
 use crate::cmds::StsCommand;
 use crate::config::Config;
-use crate::creds::CredentialsHandler;
 use crate::profile::{LongTermProfile, ShortTermProfile};
 use async_trait::async_trait;
 use aws_sdk_sts::error::{ProvideErrorMetadata, SdkError};
@@ -53,7 +52,7 @@ impl StsCommand {
     }
 
     pub async fn get_credentials(&self, config: &Config) -> anyhow::Result<()> {
-        let mut creds_handler = CredentialsHandler::from_file(config.credentials.as_path())?;
+        let mut creds_handler = config.credentials_handler()?;
 
         let lt_profile = creds_handler.get_long_term_profile(&config)?;
 
@@ -91,7 +90,7 @@ impl StsCommand {
         creds_handler.set_short_term_profile(&st_profile, &st_profile_name);
         creds_handler
             .0
-            .write_to_file(config.credentials.as_path())?;
+            .write_to_file(config.credentials_path.as_path())?;
 
         info!(
             "Successfully added short-term credentials \"{}\"",
