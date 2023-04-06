@@ -11,6 +11,9 @@ use aws_sdk_sts::{
 #[async_trait]
 pub trait StsAction {
     type Output;
+
+    const DEFAULT_DURATION: i32;
+
     async fn execute(
         &self,
         config: &Config,
@@ -26,7 +29,7 @@ pub trait StsAction {
     }
 }
 
-impl LongTermProfile {
+impl<'a> LongTermProfile<'a> {
     pub async fn create_client(&self) -> Client {
         let credentials =
             Credentials::from_keys(self.access_key.clone(), self.secret_key.clone(), None);

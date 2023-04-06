@@ -2,23 +2,23 @@ use crate::config::Config;
 use aws_sdk_sts::primitives::DateTime as AwsDateTime;
 use aws_sdk_sts::types::Credentials as StsCredentials;
 use aws_smithy_types::date_time::{ConversionError, DateTimeParseError, Format};
-use std::{ops::Deref, str::FromStr, time::SystemTime};
+use std::{borrow::Cow, ops::Deref, str::FromStr, time::SystemTime};
 
 #[derive(Debug, Default)]
-pub struct LongTermProfile {
-    pub name: String,
-    pub access_key: String,
-    pub secret_key: String,
-    pub mfa_device: String,
+pub struct LongTermProfile<'a> {
+    pub name: Cow<'a, str>,
+    pub access_key: Cow<'a, str>,
+    pub secret_key: Cow<'a, str>,
+    pub mfa_device: Cow<'a, str>,
 }
 #[derive(Debug, Default)]
-pub struct ShortTermProfile {
+pub struct ShortTermProfile<'a> {
     pub access_key: String,
     pub secret_key: String,
     pub session_token: String,
     pub expiration: DateTime,
     pub assumed_role_id: Option<String>,
-    pub assumed_role_arn: Option<String>,
+    pub assumed_role_arn: Option<Cow<'a, str>>,
 }
 
 #[derive(Debug, Clone)]
@@ -34,8 +34,8 @@ pub trait Profile {
     const EXPIRATION: &'static str = "expiration";
 }
 
-impl Profile for LongTermProfile {}
-impl Profile for ShortTermProfile {}
+impl<'a> Profile for LongTermProfile<'a> {}
+impl<'a> Profile for ShortTermProfile<'a> {}
 
 pub trait ProfileName {
     fn short_profile_name(&self, config: &Config) -> String;
@@ -68,33 +68,28 @@ impl TryFrom<DateTime> for SystemTime {
     }
 }
 
-impl ShortTermProfile {
+impl<'a> ShortTermProfile<'a> {
     pub fn format_expiration(&self) -> String {
         self.expiration.fmt(Format::DateTime).unwrap()
     }
 }
 
-impl TryFrom<Option<&StsCredentials>> for ShortTermProfile {
+impl<'a> TryFrom<Option<StsCredentials>> for ShortTermProfile<'a> {
     type Error = anyhow::Error;
-    fn try_from(creds: Option<&StsCredentials>) -> anyhow::Result<Self> {
+    fn try_from(creds: Option<StsCredentials>) -> anyhow::Result<Self> {
         let creds = creds.ok_or_else(|| anyhow::anyhow!("Failed to extract STS credentials"))?;
 
-        if let (
-            Some(access_key_id),
-            Some(secret_access_key),
-            Some(session_token),
-            Some(expiration),
-        ) = (
-            creds.access_key_id(),
-            creds.secret_access_key(),
-            creds.session_token(),
-            creds.expiration(),
+        if let (Some(access_key), Some(secret_key), Some(session_token), Some(expiration)) = (
+            creds.access_key_id,
+            creds.secret_access_key,
+            creds.session_token,
+            creds.expiration,
         ) {
             Ok(Self {
-                access_key: access_key_id.to_owned(),
-                secret_key: secret_access_key.to_owned(),
-                session_token: session_token.to_owned(),
-                expiration: DateTime(expiration.to_owned()),
+                access_key,
+                secret_key,
+                session_token,
+                expiration: DateTime(expiration),
                 assumed_role_arn: None,
                 assumed_role_id: None,
             })
