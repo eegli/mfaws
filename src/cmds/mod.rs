@@ -16,6 +16,7 @@ pub enum SubCommand {
     #[clap(flatten)]
     StsCommand(StsCommand),
     #[clap(
+        hide = true,
         name = "clean",
         about = "Remove all temporary profiles from your credentials"
     )]
