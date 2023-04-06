@@ -1,3 +1,4 @@
+use crate::creds::CredentialsHandler;
 use std::path::PathBuf;
 
 #[derive(clap::Parser, Debug, Default)]
@@ -39,7 +40,14 @@ pub struct Config {
         default_value = ".aws/credentials",
         help = "Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file"
     )]
-    pub credentials: PathBuf,
+    pub credentials_path: PathBuf,
+    #[arg(
+        long = "force",
+        global = true,
+        default_value = "false",
+        help = "Force the creation of a new short-term profile even if one already exists"
+    )]
+    pub force_new_credentials: bool,
 }
 
 impl Config {
@@ -47,6 +55,10 @@ impl Config {
         self.validate_profile_name()?;
         self.validate_credentials_path()?;
         Ok(())
+    }
+
+    pub fn credentials_handler(&self) -> Result<CredentialsHandler, ini::Error> {
+        CredentialsHandler::from_file(self.credentials_path.as_path())
     }
 
     fn validate_profile_name(&self) -> anyhow::Result<()> {
@@ -57,12 +69,12 @@ impl Config {
     }
 
     fn validate_credentials_path(&mut self) -> anyhow::Result<()> {
-        if self.credentials.is_relative() {
-            self.credentials = dirs::home_dir()
+        if self.credentials_path.is_relative() {
+            self.credentials_path = dirs::home_dir()
                 .expect("Cannot find home directory")
-                .join(self.credentials.as_path());
+                .join(self.credentials_path.as_path());
         }
-        if !self.credentials.is_file() {
+        if !self.credentials_path.is_file() {
             anyhow::bail!("The credentials file does not exist");
         }
         Ok(())
