@@ -11,12 +11,13 @@ use std::borrow::Cow;
 impl StsCredentialsRequest for AssumeRole {
     const DEFAULT_DURATION: i32 = 3600;
 
+    #[cfg(not(feature = "e2e_test"))]
     async fn get_credentials(
         &self,
         config: &Config,
+        mfa_token: String,
         lt_profile: &LongTermProfile,
     ) -> anyhow::Result<ShortTermProfile> {
-        let mfa_token = self.get_mfa_token()?;
         let output = lt_profile
             .create_client()
             .await
@@ -42,5 +43,15 @@ impl StsCredentialsRequest for AssumeRole {
             .unwrap_or_default();
 
         Ok(stp)
+    }
+
+    #[cfg(feature = "e2e_test")]
+    async fn get_credentials(
+        &self,
+        _config: &Config,
+        _mfa_token: String,
+        _lt_profile: &LongTermProfile,
+    ) -> anyhow::Result<ShortTermProfile> {
+        Ok(ShortTermProfile::default())
     }
 }

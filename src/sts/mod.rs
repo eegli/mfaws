@@ -13,16 +13,17 @@ pub trait StsCredentialsRequest {
     async fn get_credentials(
         &self,
         config: &Config,
+        mfa_token: String,
         lt_profile: &LongTermProfile,
     ) -> anyhow::Result<ShortTermProfile>;
+}
 
-    fn get_mfa_token(&self) -> anyhow::Result<String> {
-        let mut input = String::new();
-        println!("Enter MFA code:");
-        std::io::stdin().read_line(&mut input)?;
-        input = input.trim().to_owned();
-        Ok(input)
-    }
+pub fn get_mfa_token() -> anyhow::Result<String> {
+    let mut input = String::new();
+    println!("Enter MFA code:");
+    std::io::stdin().read_line(&mut input)?;
+    input = input.trim().to_owned();
+    Ok(input)
 }
 
 pub fn extract_sts_err<T>(err: SdkError<T>) -> anyhow::Error

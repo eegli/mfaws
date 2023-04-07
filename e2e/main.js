@@ -5,6 +5,8 @@ import path from 'path';
 const EXE = '../target/debug/mfaws';
 const FIXTURES = path.join(process.cwd(), 'fixtures', 'credentials');
 
+const DEBUG_BUILD_CMD = 'cargo build --features e2e_test';
+
 function setup() {
   const tempDir = fs.mkdtempSync(path.join(process.cwd(), 'test-dir'));
   fs.copyFileSync(FIXTURES, path.join(tempDir, 'credentials'));
@@ -25,9 +27,10 @@ try {
     { all: true }
   );
   childProcess.all.pipe(process.stdout);
-  childProcess.stdin.write('121212');
+  childProcess.stdin.write('111111');
   childProcess.stdin.end();
   await childProcess;
+  console.log(fs.readFileSync(credentialsPath, 'utf-8'));
 } catch (err) {
   console.error(err);
 } finally {

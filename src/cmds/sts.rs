@@ -1,5 +1,8 @@
 use super::{Command, StsCommand};
-use crate::{config::Config, sts::StsCredentialsRequest};
+use crate::{
+    config::Config,
+    sts::{get_mfa_token, StsCredentialsRequest},
+};
 use async_trait::async_trait;
 
 #[derive(clap::Args, Debug, Default)]
@@ -46,15 +49,15 @@ impl Command for StsCommand {
                 ),
             }
         };
-
+        let mfa_token = get_mfa_token()?;
         let st_profile = match self {
             StsCommand::AssumeRole(ref op) => {
                 info!("Assuming role \"{}\" for \"{}\"", op.role_arn, op.role_name);
-                op.get_credentials(&config, &lt_profile).await?
+                op.get_credentials(&config, mfa_token, &lt_profile).await?
             }
             StsCommand::GetSessionToken(ref op) => {
                 info!("Getting session token");
-                op.get_credentials(&config, &lt_profile).await?
+                op.get_credentials(&config, mfa_token, &lt_profile).await?
             }
         };
 
