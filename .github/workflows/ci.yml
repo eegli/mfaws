@@ -29,9 +29,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 19.x
+          cache: 'yarn'
       - name: Install dependencies
         run: yarn install --immutable
-        cache: 'yarn'
         working-directory: ./e2e
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
