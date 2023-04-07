@@ -1,3 +1,4 @@
+#![cfg_attr(feature = "e2e_test", allow(dead_code, unused_imports))]
 mod cli;
 mod cmds;
 mod config;
