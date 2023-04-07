@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: 19.x
       - name: Install dependencies
-        run: yarn install --immutable
+        run: yarn install
         working-directory: ./e2e
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
