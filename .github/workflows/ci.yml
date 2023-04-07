@@ -39,4 +39,4 @@ jobs:
       - name: Run tests
         run: |
           cargo build --features e2e_test &&
-          cd e2e && yarn test
+          cd e2e && npm test
