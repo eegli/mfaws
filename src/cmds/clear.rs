@@ -1,7 +1,7 @@
 use crate::{cmds::Command, config::Config};
 use async_trait::async_trait;
 
-#[derive(clap::Parser, Debug, Default)]
+#[derive(clap::Args, Debug, Default)]
 pub struct Clean;
 
 #[async_trait]

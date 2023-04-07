@@ -10,7 +10,7 @@ pub trait Command {
 }
 
 // All subcommands
-#[derive(clap::Parser, Debug)]
+#[derive(clap::Subcommand, Debug)]
 pub enum SubCommand {
     #[clap(flatten)]
     StsCommand(StsCommand),
@@ -23,7 +23,7 @@ pub enum SubCommand {
 }
 
 // STS-specific commands
-#[derive(clap::Parser, Debug)]
+#[derive(clap::Subcommand, Debug)]
 pub enum StsCommand {
     #[clap(
         name = "assume-role",

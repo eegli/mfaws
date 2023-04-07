@@ -2,7 +2,7 @@ use super::{Command, StsCommand};
 use crate::{config::Config, sts::StsCredentialsRequest};
 use async_trait::async_trait;
 
-#[derive(clap::Parser, Debug, Default)]
+#[derive(clap::Args, Debug, Default)]
 pub struct AssumeRole {
     #[arg(
         long = "role-arn",
@@ -17,7 +17,7 @@ pub struct AssumeRole {
     pub role_name: String,
 }
 
-#[derive(clap::Parser, Debug, Default)]
+#[derive(clap::Args, Debug, Default)]
 pub struct SessionToken;
 
 #[async_trait]
