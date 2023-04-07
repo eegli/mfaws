@@ -2,19 +2,19 @@ use crate::{
     cmds::sts::SessionToken,
     config::Config,
     profile::{LongTermProfile, ShortTermProfile},
-    sts::{extract_sts_err, StsAction},
+    sts::{extract_sts_err, StsCredentialsRequest},
 };
 use async_trait::async_trait;
 
 #[async_trait]
-impl StsAction for SessionToken {
+impl StsCredentialsRequest for SessionToken {
     const DEFAULT_DURATION: i32 = 43200;
 
-    async fn get_profile(
+    async fn get_credentials(
         &self,
         config: &Config,
         lt_profile: &LongTermProfile,
-    ) -> Result<ShortTermProfile, anyhow::Error> {
+    ) -> anyhow::Result<ShortTermProfile> {
         let mfa_token = self.get_mfa_token()?;
         let output = lt_profile
             .create_client()
