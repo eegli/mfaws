@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  unit-tests:
+  unit:
     name: unit tests
     runs-on: ubuntu-latest
     steps:
@@ -20,7 +20,7 @@ jobs:
           toolchain: stable
       - name: Run tests
         run: cargo test
-  e2e-tests:
+  e2e:
     name: e2e tests
     runs-on: ubuntu-latest
     steps:
