@@ -2,6 +2,7 @@ import { execa } from 'execa';
 import fs from 'fs';
 import path from 'path';
 import test from 'ava';
+import ini from 'ini';
 
 const EXE = '../target/debug/mfaws';
 const CREDENTIALS = path.join(process.cwd(), 'fixtures', 'credentials');
@@ -24,8 +25,8 @@ test('session-token', async t => {
   childProcess.stdin?.write('111111');
   childProcess.stdin?.end();
   await childProcess;
-
-  t.snapshot(fs.readFileSync(TEMP_CREDS, 'utf-8'));
+  const generated = ini.parse(fs.readFileSync(TEMP_CREDS, 'utf-8'));
+  t.snapshot(generated);
   fs.rmSync(TEMP_DIR, { recursive: true, force: true });
   t.pass();
 });
@@ -47,7 +48,8 @@ test('assume-role', async t => {
   childProcess.stdin?.end();
   await childProcess;
 
-  t.snapshot(fs.readFileSync(TEMP_CREDS, 'utf-8'));
+  const generated = ini.parse(fs.readFileSync(TEMP_CREDS, 'utf-8'));
+  t.snapshot(generated);
   fs.rmSync(TEMP_DIR, { recursive: true, force: true });
   t.pass();
 });
