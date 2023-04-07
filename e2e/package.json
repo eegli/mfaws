@@ -1,0 +1,20 @@
+{
+  "name": "e2e",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "go": "node main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "yarn@3.5.0",
+  "dependencies": {
+    "execa": "^7.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11"
+  }
+}

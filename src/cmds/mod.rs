@@ -1,9 +1,8 @@
 pub mod clear;
 pub mod sts;
 
-use async_trait::async_trait;
-
 use crate::config::Config;
+use async_trait::async_trait;
 
 #[async_trait]
 pub trait Command {
@@ -36,11 +35,4 @@ pub enum StsCommand {
         about = "Temporary credentials for an AWS IAM user"
     )]
     GetSessionToken(sts::SessionToken),
-}
-
-#[async_trait]
-impl Command for StsCommand {
-    async fn exec(&self, config: &Config) -> anyhow::Result<()> {
-        self.get_credentials(config).await
-    }
 }
