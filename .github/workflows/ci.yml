@@ -9,13 +9,34 @@ on:
       - main
 
 jobs:
-  test:
-    name: Unit tests
+  unit:
+    name: unit tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@v3
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
       - name: Run tests
         run: cargo test
+  e2e:
+    name: e2e tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19.x
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./e2e
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+      - name: Run tests
+        run: |
+          cargo build --features e2e_test &&
+          cd e2e && npm test

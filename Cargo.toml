@@ -16,6 +16,9 @@ exclude = [".github/*"]
 opt-level = "z"
 panic = "abort"
 
+[features]
+e2e_test = []
+
 [dependencies]
 anyhow = "1.0.70"
 async-trait = "0.1.68"
@@ -32,3 +35,5 @@ rust-ini = { version = "0.18.0", features = ["case-insensitive"] }
 simplelog = "0.12.1"
 thiserror = "1.0.40"
 tokio = { version = "1", features = ["full"] }
+
+

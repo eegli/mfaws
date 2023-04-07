@@ -5,16 +5,34 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "go": "node main.js"
+    "test": "ava",
+    "test:u": "ava --update-snapshots"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "yarn@3.5.0",
   "dependencies": {
     "execa": "^7.1.1"
   },
   "devDependencies": {
-    "@types/node": "^18.15.11"
+    "@ava/typescript": "^4.0.0",
+    "@types/ini": "^1.3.31",
+    "@types/node": "^18.15.11",
+    "ava": "^5.2.0",
+    "ini": "^4.0.0",
+    "typescript": "^5.0.3"
+  },
+  "ava": {
+    "snapshotDir": "__snapshots__",
+    "typescript": {
+      "extensions": [
+        "ts",
+        "tsx"
+      ],
+      "rewritePaths": {
+        "src/": "dist/"
+      },
+      "compile": "tsc"
+    }
   }
 }

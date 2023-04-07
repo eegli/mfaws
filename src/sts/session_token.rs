@@ -10,12 +10,13 @@ use async_trait::async_trait;
 impl StsCredentialsRequest for SessionToken {
     const DEFAULT_DURATION: i32 = 43200;
 
+    #[cfg(not(feature = "e2e_test"))]
     async fn get_credentials(
         &self,
         config: &Config,
+        mfa_token: String,
         lt_profile: &LongTermProfile,
     ) -> anyhow::Result<ShortTermProfile> {
-        let mfa_token = self.get_mfa_token()?;
         let output = lt_profile
             .create_client()
             .await
@@ -28,5 +29,15 @@ impl StsCredentialsRequest for SessionToken {
             .map_err(extract_sts_err)?;
         let short_term_profile = ShortTermProfile::try_from(output.credentials)?;
         Ok(short_term_profile)
+    }
+
+    #[cfg(feature = "e2e_test")]
+    async fn get_credentials(
+        &self,
+        _config: &Config,
+        _mfa_token: String,
+        _lt_profile: &LongTermProfile,
+    ) -> anyhow::Result<ShortTermProfile> {
+        Ok(ShortTermProfile::default())
     }
 }

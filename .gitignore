@@ -1,6 +1,7 @@
 /target
 cmds.sh
 
+**/dist
 **/node_modules
 **/.pnp.*
 **/.yarn/*
