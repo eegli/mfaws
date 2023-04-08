@@ -48,10 +48,17 @@ impl StsCredentialsRequest for AssumeRole {
     #[cfg(feature = "e2e_test")]
     async fn get_credentials(
         &self,
-        _config: &Config,
-        _mfa_token: String,
-        _lt_profile: &LongTermProfile,
+        config: &Config,
+        mfa_token: String,
+        lt_profile: &LongTermProfile,
     ) -> anyhow::Result<ShortTermProfile> {
-        Ok(ShortTermProfile::default())
+        Ok(ShortTermProfile {
+            access_key: "sts-access-key".to_owned(),
+            secret_key: "sts-secret-key".to_owned(),
+            session_token: "sts-session-token".to_owned(),
+            assumed_role_id: Some(self.role_arn.to_string()),
+            assumed_role_arn: Some(Cow::Owned("1111/user".to_owned())),
+            ..Default::default()
+        })
     }
 }

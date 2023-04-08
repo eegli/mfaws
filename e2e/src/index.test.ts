@@ -39,7 +39,13 @@ test('assume-role', async t => {
 
   const childProcess = execa(
     EXE,
-    ['assume-role', '--role-arn', 'arn/role', '--credentials-path', TEMP_CREDS],
+    [
+      'assume-role',
+      '--role-arn',
+      'arn:aws:iam::41283920240:role/my-role',
+      '--credentials-path',
+      TEMP_CREDS,
+    ],
     { all: true }
   );
 
