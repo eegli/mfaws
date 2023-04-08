@@ -5,7 +5,6 @@ import fs from 'fs-extra';
 
 const DEBUG_BUILD_CMD = 'cargo build --features e2e_test';
 const EXECUTABLE = '../target/debug/mfaws';
-const FIXTURES = path.join(process.cwd(), 'fixtures');
 
 const tempDir = path.join(process.cwd(), 'tmp');
 
@@ -15,7 +14,7 @@ function cleanup() {
 
 export function setupDir() {
   const credsPath = path.join(tempDir, 'credentials');
-  fs.copySync(FIXTURES, tempDir);
+  fs.copySync('fixtures', tempDir);
   return { cleanup, credsPath };
 }
 
