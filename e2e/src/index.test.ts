@@ -1,61 +1,76 @@
-import { execa } from 'execa';
-import fs from 'fs';
+import fs from 'fs-extra';
 import path from 'path';
 import test from 'ava';
-import ini from 'ini';
+import { buildBin, FIXTURES, iniToJSON, runBin } from './utils.js';
 
-const EXE = '../target/debug/mfaws';
-const CREDENTIALS = path.join(process.cwd(), 'fixtures', 'credentials');
+test.before(async () => {
+  const shouldBuild = process.argv.includes('--build');
+  if (shouldBuild) await buildBin();
+});
 
-const DEBUG_BUILD_CMD = 'cargo build --features e2e_test';
+type Context = {
+  tempDir: string;
+  credsPath: string;
+};
+
+test.beforeEach(t => {
+  const tempDir = fs.mkdtempSync(path.join('tmp', 't'));
+  const credsPath = path.join(process.cwd(), tempDir, 'credentials');
+  fs.copySync(FIXTURES, tempDir);
+  t.context = <Context>{
+    credsPath,
+    tempDir,
+  };
+});
+
+test.after(() => {
+  fs.emptyDirSync('tmp');
+});
 
 test('session-token', async t => {
-  const TEMP_DIR = path.join(process.cwd(), fs.mkdtempSync('test'));
-  const TEMP_CREDS = path.join(TEMP_DIR, 'credentials');
+  const { credsPath } = t.context as Context;
+  const childProcess = runBin('session-token', '--credentials-path', credsPath);
 
-  fs.copyFileSync(CREDENTIALS, TEMP_CREDS);
-
-  const childProcess = execa(
-    EXE,
-    ['session-token', '--credentials-path', TEMP_CREDS],
-    { all: true }
-  );
-
-  // childProcess.all?.pipe(process.stdout);
   childProcess.stdin?.write('111111');
   childProcess.stdin?.end();
-  await childProcess;
-  const generated = ini.parse(fs.readFileSync(TEMP_CREDS, 'utf-8'));
-  t.snapshot(generated);
-  fs.rmSync(TEMP_DIR, { recursive: true, force: true });
-  t.pass();
+
+  const { stdout } = await childProcess;
+  t.regex(stdout, /Successfully added short-term credentials/);
+  t.snapshot(iniToJSON(credsPath));
 });
 
 test('assume-role', async t => {
-  const TEMP_DIR = path.join(process.cwd(), fs.mkdtempSync('test'));
-  const TEMP_CREDS = path.join(TEMP_DIR, 'credentials');
-
-  fs.copyFileSync(CREDENTIALS, TEMP_CREDS);
-
-  const childProcess = execa(
-    EXE,
-    [
-      'assume-role',
-      '--role-arn',
-      'arn:aws:iam::41283920240:role/my-role',
-      '--credentials-path',
-      TEMP_CREDS,
-    ],
-    { all: true }
+  const { credsPath } = t.context as Context;
+  const childProcess = runBin(
+    'assume-role',
+    '--role-arn',
+    'arn:aws:iam::41283920240:role/my-role',
+    '--credentials-path',
+    credsPath
   );
 
-  // childProcess.all?.pipe(process.stdout);
   childProcess.stdin?.write('111111');
   childProcess.stdin?.end();
-  await childProcess;
 
-  const generated = ini.parse(fs.readFileSync(TEMP_CREDS, 'utf-8'));
-  t.snapshot(generated);
-  fs.rmSync(TEMP_DIR, { recursive: true, force: true });
-  t.pass();
+  await childProcess;
+  const { stdout } = await childProcess;
+  t.regex(stdout, /Successfully added short-term credentials/);
+  t.snapshot(iniToJSON(credsPath));
+});
+
+test('invalid credentials', async t => {
+  const { credsPath } = t.context as Context;
+  const childProcess = runBin(
+    'session-token',
+    '--profile',
+    'notexists',
+    '--credentials-path',
+    credsPath
+  );
+
+  childProcess.stdin?.write('111111');
+  childProcess.stdin?.end();
+
+  const { stderr } = await childProcess;
+  t.regex(stderr, /Profile "notexists" not found/);
 });
