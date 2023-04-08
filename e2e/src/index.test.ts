@@ -1,34 +1,13 @@
-import fs from 'fs-extra';
-import path from 'path';
 import test from 'ava';
-import { buildBin, FIXTURES, iniToJSON, runBin } from './utils.js';
+import { buildBin, setupDir, iniToJSON, runBin } from './utils.js';
 
 test.before(async () => {
   const shouldBuild = process.argv.includes('--build');
   if (shouldBuild) await buildBin();
 });
 
-type Context = {
-  tempDir: string;
-  credsPath: string;
-};
-
-test.beforeEach(t => {
-  const tempDir = fs.mkdtempSync(path.join('tmp', 't'));
-  const credsPath = path.join(process.cwd(), tempDir, 'credentials');
-  fs.copySync(FIXTURES, tempDir);
-  t.context = <Context>{
-    credsPath,
-    tempDir,
-  };
-});
-
-test.after(() => {
-  fs.emptyDirSync('tmp');
-});
-
-test('session-token', async t => {
-  const { credsPath } = t.context as Context;
+test.serial('session-token', async t => {
+  const { credsPath, cleanup } = setupDir();
   const childProcess = runBin('session-token', '--credentials-path', credsPath);
 
   childProcess.stdin?.write('111111');
@@ -37,10 +16,11 @@ test('session-token', async t => {
   const { stdout } = await childProcess;
   t.regex(stdout, /Successfully added short-term credentials/);
   t.snapshot(iniToJSON(credsPath));
+  cleanup();
 });
 
-test('assume-role', async t => {
-  const { credsPath } = t.context as Context;
+test.serial('assume-role', async t => {
+  const { credsPath, cleanup } = setupDir();
   const childProcess = runBin(
     'assume-role',
     '--role-arn',
@@ -56,10 +36,11 @@ test('assume-role', async t => {
   const { stdout } = await childProcess;
   t.regex(stdout, /Successfully added short-term credentials/);
   t.snapshot(iniToJSON(credsPath));
+  cleanup();
 });
 
-test('invalid credentials', async t => {
-  const { credsPath } = t.context as Context;
+test.serial('invalid credentials', async t => {
+  const { credsPath, cleanup } = setupDir();
   const childProcess = runBin(
     'session-token',
     '--profile',
@@ -73,4 +54,5 @@ test('invalid credentials', async t => {
 
   const { stderr } = await childProcess;
   t.regex(stderr, /Profile "notexists" not found/);
+  cleanup();
 });
