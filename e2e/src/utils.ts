@@ -19,7 +19,8 @@ export function setupDir() {
 }
 
 export async function buildBin() {
-  return execa(DEBUG_BUILD_CMD, { all: true });
+  console.log('Building executable...');
+  return execa(DEBUG_BUILD_CMD, { all: true }).pipeAll!(process.stdout);
 }
 
 export function runBin(...args: string[]) {
