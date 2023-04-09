@@ -1,61 +1,110 @@
-import { execa } from 'execa';
-import fs from 'fs';
-import path from 'path';
 import test from 'ava';
-import ini from 'ini';
+import { buildBin, setupDir, iniToJSON, runBin } from './utils.js';
 
-const EXE = '../target/debug/mfaws';
-const CREDENTIALS = path.join(process.cwd(), 'fixtures', 'credentials');
-
-const DEBUG_BUILD_CMD = 'cargo build --features e2e_test';
-
-test('session-token', async t => {
-  const TEMP_DIR = path.join(process.cwd(), fs.mkdtempSync('test'));
-  const TEMP_CREDS = path.join(TEMP_DIR, 'credentials');
-
-  fs.copyFileSync(CREDENTIALS, TEMP_CREDS);
-
-  const childProcess = execa(
-    EXE,
-    ['session-token', '--credentials-path', TEMP_CREDS],
-    { all: true }
-  );
-
-  // childProcess.all?.pipe(process.stdout);
-  childProcess.stdin?.write('111111');
-  childProcess.stdin?.end();
-  await childProcess;
-  const generated = ini.parse(fs.readFileSync(TEMP_CREDS, 'utf-8'));
-  t.snapshot(generated);
-  fs.rmSync(TEMP_DIR, { recursive: true, force: true });
-  t.pass();
+test.before(async () => {
+  const shouldBuild = process.argv.includes('--build');
+  if (shouldBuild) await buildBin();
 });
 
-test('assume-role', async t => {
-  const TEMP_DIR = path.join(process.cwd(), fs.mkdtempSync('test'));
-  const TEMP_CREDS = path.join(TEMP_DIR, 'credentials');
+test.serial('session-token with default profile', async t => {
+  const { credsPath, cleanup } = setupDir();
+  const childProcess = runBin('session-token', '--credentials-path', credsPath);
 
-  fs.copyFileSync(CREDENTIALS, TEMP_CREDS);
-
-  const childProcess = execa(
-    EXE,
-    [
-      'assume-role',
-      '--role-arn',
-      'arn:aws:iam::41283920240:role/my-role',
-      '--credentials-path',
-      TEMP_CREDS,
-    ],
-    { all: true }
-  );
-
-  // childProcess.all?.pipe(process.stdout);
   childProcess.stdin?.write('111111');
   childProcess.stdin?.end();
-  await childProcess;
 
-  const generated = ini.parse(fs.readFileSync(TEMP_CREDS, 'utf-8'));
-  t.snapshot(generated);
-  fs.rmSync(TEMP_DIR, { recursive: true, force: true });
-  t.pass();
+  const { stdout } = await childProcess;
+  t.regex(stdout, /Successfully added short-term credentials/);
+  t.snapshot(iniToJSON(credsPath));
+  cleanup();
+});
+
+test.serial('assume-role with custom name', async t => {
+  const { credsPath, cleanup } = setupDir();
+  const childProcess = runBin(
+    'assume-role',
+    '--role-arn',
+    'arn:aws:iam::41283920240:role/my-role',
+    '--role-session-name',
+    'temp',
+    '--credentials-path',
+    credsPath
+  );
+
+  childProcess.stdin?.write('111111');
+  childProcess.stdin?.end();
+
+  await childProcess;
+  const { stdout } = await childProcess;
+  t.regex(stdout, /Successfully added short-term credentials/);
+  t.snapshot(iniToJSON(credsPath));
+  cleanup();
+});
+
+test.serial('with specific profile', async t => {
+  const { credsPath, cleanup } = setupDir();
+  const childProcess = runBin(
+    'session-token',
+    '--profile',
+    'dev',
+    '--device',
+    'arn:aws:iam::123456789012:mfa/username',
+    '--credentials-path',
+    credsPath
+  );
+
+  childProcess.stdin?.write('111111');
+  childProcess.stdin?.end();
+
+  const { stdout } = await childProcess;
+  t.regex(stdout, /Successfully added short-term credentials "dev-short-term"/);
+  cleanup();
+});
+
+test.serial('without mfa device', async t => {
+  const { credsPath, cleanup } = setupDir();
+  const childProcess = runBin(
+    'session-token',
+    '--profile',
+    'dev',
+    '--credentials-path',
+    credsPath
+  );
+
+  childProcess.stdin?.write('111111');
+  childProcess.stdin?.end();
+
+  const { stderr } = await childProcess;
+  t.regex(stderr, /No MFA device found for "dev"/);
+  cleanup();
+});
+
+test.serial('with invalid profile', async t => {
+  const { credsPath, cleanup } = setupDir();
+  const childProcess = runBin(
+    'session-token',
+    '--profile',
+    'notexists',
+    '--credentials-path',
+    credsPath
+  );
+
+  childProcess.stdin?.write('111111');
+  childProcess.stdin?.end();
+
+  const { stderr } = await childProcess;
+  t.regex(stderr, /Profile "notexists" not found/);
+  cleanup();
+});
+
+test.serial('with invalid credentials', async t => {
+  const { cleanup } = setupDir();
+  const childProcess = runBin('session-token', '--credentials-path', 'tmp');
+
+  childProcess.stdin?.write('111111');
+  childProcess.stdin?.end();
+
+  const { stderr } = await childProcess;
+  t.regex(stderr, /The credentials file does not exist/);
+  cleanup();
 });

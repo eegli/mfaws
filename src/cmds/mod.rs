@@ -1,4 +1,4 @@
-pub mod clear;
+pub mod clean;
 pub mod sts;
 
 use crate::config::Config;
@@ -16,10 +16,9 @@ pub enum SubCommand {
     StsCommand(StsCommand),
     #[clap(
         hide = true,
-        name = "clean",
         about = "Remove all temporary profiles from your credentials"
     )]
-    Clean(clear::Clean),
+    Clean(clean::Clean),
 }
 
 // STS-specific commands
