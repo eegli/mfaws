@@ -1,12 +1,14 @@
 use async_trait::async_trait;
 
 use crate::{
+    clean::Clean,
     config::Config,
     sts::{assume_role::AssumeRole, session_token::SessionToken},
 };
 
+pub mod assume_role;
 pub mod clean;
-pub mod sts;
+pub mod session_token;
 
 #[async_trait]
 pub trait Command {
@@ -30,5 +32,5 @@ pub enum SubCommand {
         hide = true,
         about = "Remove all temporary profiles from your credentials"
     )]
-    Clean(clean::Clean),
+    Clean(Clean),
 }
