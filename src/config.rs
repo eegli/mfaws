@@ -6,27 +6,22 @@ pub struct Config {
         long,
         env = "AWS_SHARED_CREDENTIALS_FILE",
         global = true,
+        value_parser = valid_credentials_path,
         default_value = ".aws/credentials",
         help = "Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file"
     )]
     pub credentials_path: PathBuf,
 }
 
-impl Config {
-    pub fn init(&mut self) -> anyhow::Result<()> {
-        self.validate_credentials_path()?;
-        Ok(())
+fn valid_credentials_path(s: &str) -> Result<PathBuf, String> {
+    let mut path = PathBuf::from(s);
+    if path.is_relative() {
+        path = dirs::home_dir()
+            .ok_or_else(|| format!("Cannot find home directory"))?
+            .join(path.as_path());
     }
-
-    fn validate_credentials_path(&mut self) -> anyhow::Result<()> {
-        if self.credentials_path.is_relative() {
-            self.credentials_path = dirs::home_dir()
-                .expect("Cannot find home directory")
-                .join(self.credentials_path.as_path());
-        }
-        if !self.credentials_path.is_file() {
-            anyhow::bail!("The credentials file does not exist");
-        }
-        Ok(())
+    if !path.is_file() {
+        return Err(format!("Not a valid credentials file",));
     }
+    Ok(path)
 }
