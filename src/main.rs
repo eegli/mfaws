@@ -2,7 +2,6 @@
     feature = "e2e_test",
     allow(dead_code, unused_imports, unused_variables)
 )]
-mod clean;
 mod cli;
 mod cmds;
 mod config;

@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use crate::{
-    clean::Clean,
+    cmds::clean::Clean,
     config::Config,
     sts::{assume_role::AssumeRole, session_token::SessionToken},
 };
