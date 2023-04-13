@@ -1,22 +1,39 @@
+use crate::sts::config::CommonStsConfig;
 use crate::{
-    cmds::sts::SessionToken,
-    config::Config,
     profile::{LongTermProfile, ShortTermProfile},
-    sts::{extract_sts_err, StsCredentialsRequest},
+    sts::{extract_sts_err, ShortTermCredentials},
 };
 use async_trait::async_trait;
 
+#[derive(clap::Args, Debug, Default)]
+pub struct SessionToken {
+    #[clap(flatten)]
+    pub config: CommonStsConfig,
+}
+
 #[async_trait]
-impl StsCredentialsRequest for SessionToken {
+impl ShortTermCredentials for SessionToken {
     const DEFAULT_DURATION: i32 = 43200;
+
+    fn short_profile_name(&self) -> String {
+        format!(
+            "{}-{}",
+            self.config.profile_name, self.config.short_term_suffix
+        )
+    }
+
+    fn config<'c>(&'c self) -> &'c CommonStsConfig {
+        &self.config
+    }
 
     #[cfg(not(feature = "e2e_test"))]
     async fn get_credentials(
         &self,
-        config: &Config,
+        config: &CommonStsConfig,
         mfa_token: String,
         lt_profile: &LongTermProfile,
     ) -> anyhow::Result<ShortTermProfile> {
+        info!("Getting session token");
         let output = lt_profile
             .create_client()
             .await
@@ -34,7 +51,7 @@ impl StsCredentialsRequest for SessionToken {
     #[cfg(feature = "e2e_test")]
     async fn get_credentials(
         &self,
-        config: &Config,
+        config: &CommonStsConfig,
         mfa_token: String,
         lt_profile: &LongTermProfile,
     ) -> anyhow::Result<ShortTermProfile> {
@@ -44,5 +61,23 @@ impl StsCredentialsRequest for SessionToken {
             session_token: "sts-session-token".to_owned(),
             ..Default::default()
         })
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn session_token_st_profile_name() {
+        let cmd = SessionToken {
+            config: CommonStsConfig {
+                profile_name: "test".to_string(),
+                short_term_suffix: "short-term".to_string(),
+                ..Default::default()
+            },
+        };
+
+        assert_eq!(cmd.short_profile_name(), "test-short-term");
     }
 }

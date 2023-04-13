@@ -1,4 +1,4 @@
-use crate::{cmds::Command, config::Config};
+use crate::{cmds::Command, config::Config, creds::CredentialsHandler};
 use async_trait::async_trait;
 
 #[derive(clap::Args, Debug, Default)]
@@ -9,9 +9,9 @@ pub struct Clean {
 
 #[async_trait]
 impl Command for Clean {
-    async fn exec(&self, config: &Config) -> anyhow::Result<()> {
-        let creds_handler = config.credentials_handler()?;
-        let sections = creds_handler.0.sections().flatten().collect::<Vec<_>>();
+    async fn exec(self, config: &Config) -> anyhow::Result<()> {
+        let creds_handler = CredentialsHandler::try_from(config)?;
+        let sections = creds_handler.ini.sections().flatten().collect::<Vec<_>>();
         info!("Sections: {:#?}", sections);
         // TODO
         Ok(())

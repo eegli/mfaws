@@ -1,23 +1,63 @@
+use crate::sts::config::CommonStsConfig;
 use crate::{
-    cmds::sts::AssumeRole,
-    config::Config,
     profile::{LongTermProfile, ShortTermProfile},
-    sts::{extract_sts_err, StsCredentialsRequest},
+    sts::{extract_sts_err, ShortTermCredentials},
 };
 use async_trait::async_trait;
 use std::borrow::Cow;
 
+#[derive(clap::Args, Debug, Default)]
+pub struct AssumeRole {
+    #[arg(
+        long = "role-arn",
+        help = "The ARN of the AWS IAM Role you want to assume"
+    )]
+    pub role_arn: String,
+    #[arg(
+        long = "role-session-name",
+        default_value = "mfa-user",
+        help = "Custom friendly session name when assuming a role"
+    )]
+    pub role_name: String,
+    #[clap(flatten)]
+    pub config: CommonStsConfig,
+}
+
 #[async_trait]
-impl StsCredentialsRequest for AssumeRole {
+impl ShortTermCredentials for AssumeRole {
     const DEFAULT_DURATION: i32 = 3600;
+
+    fn short_profile_name(&self) -> String {
+        let arn = self
+            .role_arn
+            .split([':', '/'])
+            .skip(4)
+            .collect::<Vec<&str>>()
+            .join("-");
+        self.config.profile_name.clone()
+            + "_"
+            + &arn
+            + "-"
+            + &self.role_name
+            + "_"
+            + &self.config.short_term_suffix
+    }
+
+    fn config<'c>(&'c self) -> &'c CommonStsConfig {
+        &self.config
+    }
 
     #[cfg(not(feature = "e2e_test"))]
     async fn get_credentials(
         &self,
-        config: &Config,
+        config: &CommonStsConfig,
         mfa_token: String,
         lt_profile: &LongTermProfile,
     ) -> anyhow::Result<ShortTermProfile> {
+        info!(
+            "Assuming role \"{}\" for \"{}\"",
+            self.role_arn, self.role_name
+        );
         let output = lt_profile
             .create_client()
             .await
@@ -48,7 +88,7 @@ impl StsCredentialsRequest for AssumeRole {
     #[cfg(feature = "e2e_test")]
     async fn get_credentials(
         &self,
-        config: &Config,
+        config: &CommonStsConfig,
         mfa_token: String,
         lt_profile: &LongTermProfile,
     ) -> anyhow::Result<ShortTermProfile> {
@@ -60,5 +100,27 @@ impl StsCredentialsRequest for AssumeRole {
             assumed_role_arn: Some(Cow::Owned("1111/user".to_owned())),
             ..Default::default()
         })
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn assume_role_st_profile_name() {
+        let cmd = AssumeRole {
+            role_arn: "arn:aws:sts::462440:assumed-role/test-role".to_string(),
+            role_name: "mfa-user".to_string(),
+            config: CommonStsConfig {
+                profile_name: "test".to_string(),
+                short_term_suffix: "short-term".to_string(),
+                ..Default::default()
+            },
+        };
+        assert_eq!(
+            cmd.short_profile_name(),
+            "test_462440-assumed-role-test-role-mfa-user_short-term"
+        );
     }
 }
