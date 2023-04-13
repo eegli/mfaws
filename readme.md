@@ -173,7 +173,7 @@ mfaws session-token --help
 ```shell
 Temporary credentials for an AWS IAM user
 
-Usage: mfaws.exe session-token [OPTIONS]
+Usage: mfaws session-token [OPTIONS]
 
 Options:
       --profile <PROFILE_NAME>
