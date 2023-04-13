@@ -48,6 +48,13 @@ impl ShortTermCredentials for AssumeRole {
         &self.config
     }
 
+    fn log_action(&self) {
+        info!(
+            "Assuming role \"{}\" for \"{}\"",
+            self.role_arn, self.role_name
+        );
+    }
+
     #[cfg(not(feature = "e2e_test"))]
     async fn get_credentials(
         &self,
@@ -55,10 +62,6 @@ impl ShortTermCredentials for AssumeRole {
         mfa_token: String,
         lt_profile: &LongTermProfile,
     ) -> anyhow::Result<ShortTermProfile> {
-        info!(
-            "Assuming role \"{}\" for \"{}\"",
-            self.role_arn, self.role_name
-        );
         let output = lt_profile
             .create_client()
             .await
@@ -109,7 +112,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn assume_role_st_profile_name() {
+    fn short_profile_name() {
         let cmd = AssumeRole {
             role_arn: "arn:aws:sts::462440:assumed-role/test-role".to_string(),
             role_name: "mfa-user".to_string(),

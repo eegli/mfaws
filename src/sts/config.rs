@@ -67,7 +67,7 @@ mod test_config {
 
         assert!(config.validate_profile_name().is_ok());
 
-        config.profile_name = "default-short-term".to_string();
+        config.profile_name = "xshort-term".to_string();
         assert!(config.validate_profile_name().is_err());
     }
 }

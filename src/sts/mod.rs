@@ -23,6 +23,7 @@ pub trait ShortTermCredentials {
     ) -> anyhow::Result<ShortTermProfile>;
 
     fn short_profile_name(&self) -> String;
+    fn log_action(&self) -> ();
     fn config<'c>(&'c self) -> &'c CommonStsConfig;
 }
 
@@ -61,6 +62,7 @@ where
         }
     };
     let mfa_token = get_mfa_token()?;
+    cmd.log_action();
     let st_profile = cmd.get_credentials(&config, mfa_token, &lt_profile).await?;
 
     handler.set_short_term_profile(&st_profile, &st_profile_name);

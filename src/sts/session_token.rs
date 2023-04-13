@@ -26,6 +26,10 @@ impl ShortTermCredentials for SessionToken {
         &self.config
     }
 
+    fn log_action(&self) {
+        info!("Getting session token");
+    }
+
     #[cfg(not(feature = "e2e_test"))]
     async fn get_credentials(
         &self,
@@ -33,7 +37,6 @@ impl ShortTermCredentials for SessionToken {
         mfa_token: String,
         lt_profile: &LongTermProfile,
     ) -> anyhow::Result<ShortTermProfile> {
-        info!("Getting session token");
         let output = lt_profile
             .create_client()
             .await
@@ -69,7 +72,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn session_token_st_profile_name() {
+    fn short_profile_name() {
         let cmd = SessionToken {
             config: CommonStsConfig {
                 profile_name: "test".to_string(),
