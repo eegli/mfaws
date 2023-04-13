@@ -1,5 +1,6 @@
-use crate::{cmds::Command, config::Config, creds::CredentialsHandler};
 use async_trait::async_trait;
+
+use crate::{cmds::Command, config::Config, creds::CredentialsHandler};
 
 #[derive(clap::Args, Debug, Default)]
 pub struct Clean {

@@ -1,14 +1,19 @@
-use crate::config::Config;
+use std::{
+    borrow::Cow,
+    fmt::Debug,
+    path::{Path, PathBuf},
+    time::SystemTime,
+};
+
+use ini::{self, Ini, Properties};
+use thiserror::Error;
+
 use crate::{
+    config::Config,
     profile::{DateTime, LongTermProfile, Profile, ShortTermProfile},
     sts::config::CommonStsConfig,
     utils::get_remaining_time,
 };
-use ini::{self, Ini, Properties};
-use std::path::PathBuf;
-use std::{borrow::Cow, path::Path};
-use std::{fmt::Debug, time::SystemTime};
-use thiserror::Error;
 
 pub struct CredentialsHandler {
     pub ini: Ini,
@@ -266,9 +271,8 @@ mod test_long_term_profile {
 #[cfg(test)]
 mod test_short_term_profile {
 
-    use crate::profile::Profile;
-
     use super::*;
+    use crate::profile::Profile;
 
     #[test]
     fn writes_st_profile_with_assumed_role() {

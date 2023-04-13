@@ -1,6 +1,9 @@
-use crate::config::Config;
-use crate::sts::{assume_role::AssumeRole, session_token::SessionToken};
 use async_trait::async_trait;
+
+use crate::{
+    config::Config,
+    sts::{assume_role::AssumeRole, session_token::SessionToken},
+};
 
 pub mod clean;
 pub mod sts;

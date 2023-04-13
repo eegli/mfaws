@@ -1,9 +1,9 @@
-use crate::sts::config::CommonStsConfig;
+use async_trait::async_trait;
+
 use crate::{
     profile::{LongTermProfile, ShortTermProfile},
-    sts::{extract_sts_err, ShortTermCredentials},
+    sts::{config::CommonStsConfig, extract_sts_err, ShortTermCredentials},
 };
-use async_trait::async_trait;
 
 #[derive(clap::Args, Debug, Default)]
 pub struct SessionToken {

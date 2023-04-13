@@ -1,11 +1,11 @@
-use crate::cmds::Command;
-use crate::sts::session_token::SessionToken;
+use async_trait::async_trait;
+
 use crate::{
+    cmds::Command,
     config::Config,
     creds::CredentialsHandler,
-    sts::{assume_role::AssumeRole, get_st_profile},
+    sts::{assume_role::AssumeRole, get_st_profile, session_token::SessionToken},
 };
-use async_trait::async_trait;
 
 #[async_trait]
 impl Command for AssumeRole {
@@ -28,8 +28,7 @@ impl Command for SessionToken {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::sts::ShortTermCredentials;
-    use crate::{cmds::SubCommand, sts::config::CommonStsConfig};
+    use crate::sts::{config::CommonStsConfig, ShortTermCredentials};
 
     #[test]
     fn session_token_st_profile_name() {

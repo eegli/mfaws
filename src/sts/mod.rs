@@ -1,8 +1,11 @@
-use crate::creds::CredentialsHandler;
-use crate::profile::{LongTermProfile, ShortTermProfile};
-use crate::sts::config::CommonStsConfig;
 use async_trait::async_trait;
 use aws_sdk_sts::error::{ProvideErrorMetadata, SdkError};
+
+use crate::{
+    creds::CredentialsHandler,
+    profile::{LongTermProfile, ShortTermProfile},
+    sts::config::CommonStsConfig,
+};
 
 pub mod assume_role;
 pub mod config;

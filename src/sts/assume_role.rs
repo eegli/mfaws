@@ -1,10 +1,11 @@
-use crate::sts::config::CommonStsConfig;
+use std::borrow::Cow;
+
+use async_trait::async_trait;
+
 use crate::{
     profile::{LongTermProfile, ShortTermProfile},
-    sts::{extract_sts_err, ShortTermCredentials},
+    sts::{config::CommonStsConfig, extract_sts_err, ShortTermCredentials},
 };
-use async_trait::async_trait;
-use std::borrow::Cow;
 
 #[derive(clap::Args, Debug, Default)]
 pub struct AssumeRole {

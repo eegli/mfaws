@@ -1,6 +1,6 @@
-use crate::cmds::SubCommand;
-use crate::config::Config;
 use clap::Parser;
+
+use crate::{cmds::SubCommand, config::Config};
 
 #[derive(clap::Parser, Debug)]
 #[command(author, version, about, long_about = None)]
