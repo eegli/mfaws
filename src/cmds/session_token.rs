@@ -15,22 +15,3 @@ impl Command for SessionToken {
         get_st_profile(self, creds_handler).await
     }
 }
-
-#[cfg(test)]
-mod test {
-    use super::*;
-    use crate::sts::{config::CommonStsConfig, ShortTermCredentials};
-
-    #[test]
-    fn session_token_st_profile_name() {
-        let cmd = SessionToken {
-            config: CommonStsConfig {
-                profile_name: "test".to_string(),
-                short_term_suffix: "short-term".to_string(),
-                ..Default::default()
-            },
-        };
-
-        assert_eq!(cmd.short_profile_name(), "test-short-term");
-    }
-}

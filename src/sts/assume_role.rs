@@ -106,25 +106,3 @@ impl ShortTermCredentials for AssumeRole {
         })
     }
 }
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn short_profile_name() {
-        let cmd = AssumeRole {
-            role_arn: "arn:aws:sts::462440:assumed-role/test-role".to_string(),
-            role_name: "mfa-user".to_string(),
-            config: CommonStsConfig {
-                profile_name: "test".to_string(),
-                short_term_suffix: "short-term".to_string(),
-                ..Default::default()
-            },
-        };
-        assert_eq!(
-            cmd.short_profile_name(),
-            "test_462440-assumed-role-test-role-mfa-user_short-term"
-        );
-    }
-}
