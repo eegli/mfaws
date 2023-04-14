@@ -107,7 +107,7 @@ You might want to run it manually the first time to see what name is generated f
 
 In your terminal, run `mfaws help` to see all (sub)commands and their usage:
 
-```shell
+```
 A CLI tool to manage AWS credentials for MFA-enabled accounts
 
 Usage: mfaws.exe [OPTIONS] <COMMAND>
@@ -134,7 +134,7 @@ Options:
 mfaws assume-role --help
 ```
 
-```shell
+```
 Temporary credentials for an assumed AWS IAM Role
 
 Usage: mfaws assume-role [OPTIONS] --role-arn <ROLE_ARN>
@@ -185,7 +185,7 @@ Options:
 mfaws session-token --help
 ```
 
-```shell
+```
 Temporary credentials for an AWS IAM user
 
 Usage: mfaws session-token [OPTIONS]
@@ -223,6 +223,44 @@ Options:
 
   -h, --help
           Print help (see a summary with '-h')
+```
+
+### `clean`
+
+```shell
+mfaws clean --help
+```
+
+```
+Remove temporary short-time profiles from your credentials file. You'll be prompted to confirm the deletion
+
+Usage: mfaws clean [OPTIONS]
+
+Options:
+      --short-term-suffix <SHORT_TERM_SUFFIX>
+          To identify the auto-generated short-term credential profile [default: short-term]
+      --credentials-path <CREDENTIALS_PATH>
+          Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file [env: AWS_SHARED_CREDENTIALS_FILE=] [default: .aws/credentials]
+  -h, --help
+          Print help
+```
+
+### `list`
+
+```shell
+mfaws list --help
+```
+
+```
+List profiles in your credentials file
+
+Usage: mfaws list [OPTIONS]
+
+Options:
+      --credentials-path <CREDENTIALS_PATH>
+          Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file [env: AWS_SHARED_CREDENTIALS_FILE=] [default: .aws/credentials]
+  -h, --help
+          Print help
 ```
 
 ## Roadmap and Todos
