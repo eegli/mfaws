@@ -28,10 +28,9 @@ async fn run() -> anyhow::Result<()> {
 }
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() {
     logger::init();
     if let Err(err) = run().await {
         error!("{}", err);
     }
-    Ok(())
 }
