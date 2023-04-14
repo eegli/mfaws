@@ -94,6 +94,7 @@ test.serial('with invalid profile', async t => {
 
 test.serial('with invalid short-term suffix', async t => {
   const { credsPath, cleanup } = setupDir();
+  console.log(credsPath);
   const childProcess = runBin(
     'session-token',
     '--profile',
