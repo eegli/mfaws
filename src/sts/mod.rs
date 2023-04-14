@@ -5,6 +5,7 @@ use crate::{
     creds::CredentialsHandler,
     profile::{LongTermProfile, ShortTermProfile},
     sts::config::CommonStsConfig,
+    utils::get_input,
 };
 
 pub mod assume_role;
@@ -25,14 +26,6 @@ pub trait ShortTermCredentials {
     fn short_profile_name(&self) -> String;
     fn log_action(&self) -> ();
     fn config<'c>(&'c self) -> &'c CommonStsConfig;
-}
-
-pub fn get_mfa_token() -> anyhow::Result<String> {
-    let mut input = String::new();
-    println!("Enter MFA code:");
-    std::io::stdin().read_line(&mut input)?;
-    input = input.trim().to_owned();
-    Ok(input)
 }
 
 pub async fn get_st_profile<T>(cmd: T, mut handler: CredentialsHandler) -> anyhow::Result<()>
@@ -61,7 +54,7 @@ where
             ),
         }
     };
-    let mfa_token = get_mfa_token()?;
+    let mfa_token = get_input("Enter MFA code:")?;
     cmd.log_action();
     let st_profile = cmd.get_credentials(&config, mfa_token, &lt_profile).await?;
 

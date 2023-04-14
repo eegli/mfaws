@@ -27,7 +27,7 @@ pub struct CommonStsConfig {
         long = "short-term-suffix",
         global = true,
         default_value = "short-term",
-        help = "To identify the auto-generated short-term credential profile by [<profile_name>-SHORT_TERM_SUFFIX]"
+        help = "To identify the auto-generated short-term credential profile"
     )]
     pub short_term_suffix: String,
     #[arg(

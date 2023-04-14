@@ -1,20 +1,36 @@
 use async_trait::async_trait;
 
+use crate::utils::confirm_prompt;
 use crate::{cmds::Command, config::Config, creds::CredentialsHandler};
 
 #[derive(clap::Args, Debug, Default)]
 pub struct Clean {
-    #[clap(long, default_value = "false")]
-    pub all: Option<bool>,
+    #[arg(
+        long = "short-term-suffix",
+        global = true,
+        default_value = "short-term",
+        help = "To identify the auto-generated short-term credential profile"
+    )]
+    pub short_term_suffix: String,
 }
 
 #[async_trait]
 impl Command for Clean {
     async fn exec(self, config: &Config) -> anyhow::Result<()> {
-        let creds_handler = CredentialsHandler::try_from(config)?;
-        let sections = creds_handler.ini.sections().flatten().collect::<Vec<_>>();
-        info!("Sections: {:#?}", sections);
-        // TODO
+        let mut creds_handler = CredentialsHandler::try_from(config)?;
+        let sections =
+            creds_handler.get_profiles_matching(|p| p.ends_with(&self.short_term_suffix));
+        info!("Do you want to delete the following short-term profiles?");
+        for section in &sections {
+            println!("{}", section);
+        }
+        if confirm_prompt("Delete profiles") {
+            for section in sections {
+                creds_handler.ini.delete(Some(&section));
+            }
+            info!("Successfully deleted short-term profiles");
+            creds_handler.to_file()?;
+        }
         Ok(())
     }
 }
