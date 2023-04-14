@@ -19,8 +19,8 @@ extern crate log;
 async fn run() -> anyhow::Result<()> {
     let (command, config) = cli::parse()?;
     match command {
-        // Sts commands are further delegated
-        SubCommand::StsCommand(cmd) => cmd.exec(&config).await?,
+        SubCommand::AssumeRole(cmd) => cmd.exec(&config).await?,
+        SubCommand::GetSessionToken(cmd) => cmd.exec(&config).await?,
         SubCommand::Clean(cmd) => cmd.exec(&config).await?,
     };
     Ok(())

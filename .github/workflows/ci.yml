@@ -36,7 +36,8 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
+      - name: Build binary
+        run: cargo build --features e2e_test
       - name: Run tests
-        run: |
-          cargo build --features e2e_test &&
-          cd e2e && npm test
+        run: npm test
+        working-directory: ./e2e

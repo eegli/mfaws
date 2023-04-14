@@ -103,26 +103,92 @@ alias mfa-admin="mfaws assume-role --profile dev --role-arn arn:aws:iam::6823sdf
 
 You might want to run it manually the first time to see what name is generated for your short-term profile. It's a combination of the assumed role and role name.
 
-## Full Usage
+## Commands
 
-In your terminal, run:
+In your terminal, run `mfaws help` to see all (sub)commands and their usage:
 
-```
-mfaws help
+```shell
+A CLI tool to manage AWS credentials for MFA-enabled accounts
+
+Usage: mfaws.exe [OPTIONS] <COMMAND>
+
+Commands:
+  assume-role    Temporary credentials for an assumed AWS IAM Role
+  session-token  Temporary credentials for an AWS IAM user
+  help           Print this message or the help of the given subcommand(s)
+
+Options:
+      --credentials-path <CREDENTIALS_PATH>
+          Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file [env: AWS_SHARED_CREDENTIALS_FILE=] [default: .aws/credentials]
+  -h, --help
+          Print help
+  -V, --version
+          Print version
 ```
 
 **mfaws** allows you to customize many things, including the duration of the temporary credentials, the short-term suffix that is used to generate short-term profiles or the path to the credentials file. Many values can also be read from the corresponding environment variables.
 
-```shell
-Usage: mfaws [OPTIONS] <COMMAND>
+### `assume-role`
 
-Commands:
-  assume-role
-          Temporary credentials for an assumed AWS IAM Role
-  session-token
-          Temporary credentials for an AWS IAM user
-  help
-          Print this message or the help of the given subcommand(s)
+```shell
+mfaws assume-role --help
+```
+
+```shell
+Temporary credentials for an assumed AWS IAM Role
+
+Usage: mfaws assume-role [OPTIONS] --role-arn <ROLE_ARN>
+
+Options:
+      --role-arn <ROLE_ARN>
+          The ARN of the AWS IAM Role you want to assume
+
+
+          [default: mfa-user]
+
+      --profile <PROFILE_NAME>
+          The AWS credentials profile to use
+
+          [env: AWS_PROFILE=]
+          [default: default]
+
+      --credentials-path <CREDENTIALS_PATH>
+          Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file
+
+          [env: AWS_SHARED_CREDENTIALS_FILE=]
+          [default: .aws/credentials]
+
+      --device <MFA_DEVICE>
+          The MFA Device ARN. This value can also be provided via the ~/.aws/credentials variable 'aws_mfa_device'
+
+          [env: MFA_DEVICE=]
+
+      --duration <DURATION>
+          The duration, in seconds, for which the temporary credentials should remain valid. Defaults to 43200 (12 hours) for session tokens and 3600 (one hour) when assuming a role
+          [env: MFA_STS_DURATION=]
+
+      --short-term-suffix <SHORT_TERM_SUFFIX>
+          To identify the auto-generated short-term credential profile by [<profile_name>-SHORT_TERM_SUFFIX]
+
+          [default: short-term]
+
+      --force
+          Force the creation of a new short-term profile even if one already exists
+
+  -h, --help
+          Print help (see a summary with '-h')
+```
+
+### `session-token`
+
+```shell
+mfaws session-token --help
+```
+
+```shell
+Temporary credentials for an AWS IAM user
+
+Usage: mfaws session-token [OPTIONS]
 
 Options:
       --profile <PROFILE_NAME>
@@ -141,22 +207,22 @@ Options:
 
           [env: MFA_STS_DURATION=]
 
-      --short-term-suffix <SHORT_TERM_SUFFIX>
-          To identify the auto-generated short-term credential profile by [<profile_name>-SHORT_TERM_SUFFIX]
-
-          [default: short-term]
-
-      --credentials <CREDENTIALS>
+      --credentials-path <CREDENTIALS_PATH>
           Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file
 
           [env: AWS_SHARED_CREDENTIALS_FILE=]
           [default: .aws/credentials]
 
+      --short-term-suffix <SHORT_TERM_SUFFIX>
+          To identify the auto-generated short-term credential profile by [<profile_name>-SHORT_TERM_SUFFIX]
+
+          [default: short-term]
+
+      --force
+          Force the creation of a new short-term profile even if one already exists
+
   -h, --help
           Print help (see a summary with '-h')
-
-  -V, --version
-          Print version
 ```
 
 ## Roadmap and Todos

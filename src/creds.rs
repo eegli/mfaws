@@ -1,15 +1,24 @@
+use std::{
+    borrow::Cow,
+    fmt::Debug,
+    path::{Path, PathBuf},
+    time::SystemTime,
+};
+
+use ini::{self, Ini, Properties};
+use thiserror::Error;
+
 use crate::{
     config::Config,
     profile::{DateTime, LongTermProfile, Profile, ShortTermProfile},
+    sts::config::CommonStsConfig,
     utils::get_remaining_time,
 };
-use ini::{Ini, Properties};
-use std::{borrow::Cow, path::Path};
-use std::{fmt::Debug, time::SystemTime};
-use thiserror::Error;
 
-#[derive(Default)]
-pub struct CredentialsHandler(pub Ini);
+pub struct CredentialsHandler {
+    pub ini: Ini,
+    path: Option<PathBuf>,
+}
 
 impl Debug for CredentialsHandler {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -17,25 +26,47 @@ impl Debug for CredentialsHandler {
     }
 }
 
+impl TryFrom<&Config> for CredentialsHandler {
+    type Error = anyhow::Error;
+    fn try_from(config: &Config) -> Result<CredentialsHandler, Self::Error> {
+        CredentialsHandler::from_file(config.credentials_path.as_path())
+    }
+}
+
 impl CredentialsHandler {
-    pub fn _new(buf: &str) -> Result<Self, ini::ParseError> {
-        Ok(Self(Ini::load_from_str(buf)?))
+    pub(self) fn _new(buf: &str) -> Result<Self, ini::ParseError> {
+        Ok(Self {
+            ini: Ini::load_from_str(buf)?,
+            path: None,
+        })
     }
 
-    pub fn from_file<P>(path: P) -> Result<Self, ini::Error>
+    pub fn from_file<P>(path: P) -> anyhow::Result<Self>
     where
         P: AsRef<Path>,
     {
-        Ok(Self(Ini::load_from_file(path)?))
+        Ok(Self {
+            ini: Ini::load_from_file(path.as_ref())
+                .map_err(|e| anyhow::anyhow!("Failed to load credentials file: {}", e))?,
+            path: Some(path.as_ref().to_path_buf()),
+        })
+    }
+
+    pub fn to_file(&self) -> anyhow::Result<()> {
+        match self.path {
+            Some(ref path) => self.ini.write_to_file(path)?,
+            None => anyhow::bail!("No path set"),
+        };
+        Ok(())
     }
 
     pub fn get_long_term_profile<'a>(
         &'a self,
-        conf: &'a Config,
+        conf: &'a CommonStsConfig,
     ) -> Result<LongTermProfile<'a>, CredentialsError> {
         let profile = &conf.profile_name;
         let sections = self
-            .0
+            .ini
             .section_all(Some(profile))
             .take(2)
             .collect::<Vec<_>>();
@@ -72,7 +103,7 @@ impl CredentialsHandler {
     }
 
     pub fn get_profile(&self, profile_name: &str) -> Option<&Properties> {
-        self.0.section(Some(profile_name))
+        self.ini.section(Some(profile_name))
     }
 
     pub fn is_profile_still_valid(&self, profile_name: &str) -> Option<String> {
@@ -85,7 +116,7 @@ impl CredentialsHandler {
 
     pub fn set_short_term_profile(&mut self, profile: &ShortTermProfile, profile_name: &str) {
         if let Some(ref arn) = &profile.assumed_role_arn {
-            self.0.set_to(
+            self.ini.set_to(
                 Some(profile_name),
                 LongTermProfile::ASSUMED_ROLE_ARN.to_owned(),
                 arn.to_string(),
@@ -93,14 +124,14 @@ impl CredentialsHandler {
         }
 
         if let Some(ref id) = &profile.assumed_role_id {
-            self.0.set_to(
+            self.ini.set_to(
                 Some(profile_name),
                 LongTermProfile::ASSUMED_ROLE_ID.to_owned(),
                 id.to_owned(),
             );
         }
 
-        self.0
+        self.ini
             .with_section(Some(profile_name))
             .set(LongTermProfile::EXPIRATION, profile.format_expiration())
             .set(LongTermProfile::ACCESS_KEY, profile.access_key.to_owned())
@@ -137,7 +168,7 @@ mod test_long_term_profile {
         aws_secret_access_key = 1
         aws_mfa_device = 2"#;
         let handler = CredentialsHandler::_new(ini).unwrap();
-        let config = Config {
+        let config = CommonStsConfig {
             profile_name: "test".to_owned(),
             ..Default::default()
         };
@@ -153,7 +184,7 @@ mod test_long_term_profile {
         aws_access_key_id = 1
         aws_mfa_device = 2"#;
         let handler = CredentialsHandler::_new(ini).unwrap();
-        let config = Config {
+        let config = CommonStsConfig {
             profile_name: "test".to_owned(),
             ..Default::default()
         };
@@ -169,7 +200,7 @@ mod test_long_term_profile {
         aws_access_key_id = 1
         aws_secret_access_key = 1"#;
         let handler = CredentialsHandler::_new(ini).unwrap();
-        let config = Config {
+        let config = CommonStsConfig {
             profile_name: "test".to_owned(),
             ..Default::default()
         };
@@ -183,7 +214,7 @@ mod test_long_term_profile {
     fn err_no_profile() {
         let ini = "";
         let handler = CredentialsHandler::_new(ini).unwrap();
-        let config = Config {
+        let config = CommonStsConfig {
             profile_name: "test".to_owned(),
             ..Default::default()
         };
@@ -199,7 +230,7 @@ mod test_long_term_profile {
         [test]
         bla = 3"#;
         let handler = CredentialsHandler::_new(ini).unwrap();
-        let config = Config {
+        let config = CommonStsConfig {
             profile_name: "test".to_owned(),
             ..Default::default()
         };
@@ -216,7 +247,7 @@ mod test_long_term_profile {
         aws_secret_access_key = 1
         aws_mfa_device = 2"#;
         let handler = CredentialsHandler::_new(ini).unwrap();
-        let config = Config {
+        let config = CommonStsConfig {
             profile_name: "test".to_owned(),
             ..Default::default()
         };
@@ -229,7 +260,7 @@ mod test_long_term_profile {
         aws_access_key_id = 1
         aws_secret_access_key = 1"#;
         let handler = CredentialsHandler::_new(ini).unwrap();
-        let config = Config {
+        let config = CommonStsConfig {
             profile_name: "test".to_owned(),
             mfa_device: Some("device".to_owned()),
             ..Default::default()
@@ -241,9 +272,8 @@ mod test_long_term_profile {
 #[cfg(test)]
 mod test_short_term_profile {
 
-    use crate::profile::Profile;
-
     use super::*;
+    use crate::profile::Profile;
 
     #[test]
     fn writes_st_profile_with_assumed_role() {
@@ -255,7 +285,7 @@ mod test_short_term_profile {
         };
         let profile_name = "test";
         handler.set_short_term_profile(&profile, profile_name);
-        let section = handler.0.section(Some(profile_name)).unwrap();
+        let section = handler.ini.section(Some(profile_name)).unwrap();
 
         assert!(section.contains_key(ShortTermProfile::ASSUMED_ROLE_ARN));
         assert!(section.contains_key("assumed_role_id"));
@@ -275,7 +305,7 @@ mod test_short_term_profile {
         };
         let profile_name = "test";
         handler.set_short_term_profile(&profile, profile_name);
-        let section = handler.0.section(Some(profile_name)).unwrap();
+        let section = handler.ini.section(Some(profile_name)).unwrap();
         assert!(!section.contains_key(ShortTermProfile::ASSUMED_ROLE_ARN));
         assert!(!section.contains_key("assumed_role_id"));
         assert!(section.contains_key("expiration"));

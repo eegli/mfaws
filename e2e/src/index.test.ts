@@ -63,7 +63,7 @@ test.serial('with specific profile', async t => {
 
 test.serial('without mfa device', async t => {
   const { credsPath, cleanup } = setupDir();
-  const childProcess = runBin(
+  const { stderr } = await runBin(
     'session-token',
     '--profile',
     'dev',
@@ -71,17 +71,13 @@ test.serial('without mfa device', async t => {
     credsPath
   );
 
-  childProcess.stdin?.write('111111');
-  childProcess.stdin?.end();
-
-  const { stderr } = await childProcess;
   t.regex(stderr, /No MFA device found for "dev"/);
   cleanup();
 });
 
 test.serial('with invalid profile', async t => {
   const { credsPath, cleanup } = setupDir();
-  const childProcess = runBin(
+  const { stderr } = await runBin(
     'session-token',
     '--profile',
     'notexists',
@@ -89,22 +85,33 @@ test.serial('with invalid profile', async t => {
     credsPath
   );
 
-  childProcess.stdin?.write('111111');
-  childProcess.stdin?.end();
-
-  const { stderr } = await childProcess;
   t.regex(stderr, /Profile "notexists" not found/);
+  cleanup();
+});
+
+test.serial('with invalid short-term suffix', async t => {
+  const { credsPath, cleanup } = setupDir();
+  const { stderr } = await runBin(
+    'session-token',
+    '--profile',
+    'dev-short-term',
+    '--credentials-path',
+    credsPath
+  );
+
+  t.regex(stderr, /Profile name cannot end with the short-term suffix/);
   cleanup();
 });
 
 test.serial('with invalid credentials', async t => {
   const { cleanup } = setupDir();
-  const childProcess = runBin('session-token', '--credentials-path', 'tmp');
+  const { stderr } = await runBin(
+    'session-token',
+    '--credentials-path',
+    'doesnotexist'
+  );
 
-  childProcess.stdin?.write('111111');
-  childProcess.stdin?.end();
+  t.regex(stderr, /Failed to load credentials file/);
 
-  const { stderr } = await childProcess;
-  t.regex(stderr, /The credentials file does not exist/);
   cleanup();
 });

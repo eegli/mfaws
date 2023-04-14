@@ -1,9 +1,11 @@
+use std::{borrow::Cow, ops::Deref, str::FromStr, time::SystemTime};
+
 use aws_config::ConfigLoader;
 use aws_credential_types::Credentials;
-use aws_sdk_sts::types::Credentials as StsCredentials;
-use aws_sdk_sts::{primitives::DateTime as AwsDateTime, Client};
+use aws_sdk_sts::{
+    primitives::DateTime as AwsDateTime, types::Credentials as StsCredentials, Client,
+};
 use aws_smithy_types::date_time::{ConversionError, DateTimeParseError, Format};
-use std::{borrow::Cow, ops::Deref, str::FromStr, time::SystemTime};
 
 #[derive(Debug, Default)]
 pub struct LongTermProfile<'a> {
