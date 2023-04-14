@@ -105,10 +105,25 @@ You might want to run it manually the first time to see what name is generated f
 
 ## Commands
 
-In your terminal, run:
+In your terminal, run `mfaws help` to see all (sub)commands and their usage:
 
-```
-mfaws help
+```shell
+A CLI tool to manage AWS credentials for MFA-enabled accounts
+
+Usage: mfaws.exe [OPTIONS] <COMMAND>
+
+Commands:
+  assume-role    Temporary credentials for an assumed AWS IAM Role
+  session-token  Temporary credentials for an AWS IAM user
+  help           Print this message or the help of the given subcommand(s)
+
+Options:
+      --credentials-path <CREDENTIALS_PATH>
+          Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file [env: AWS_SHARED_CREDENTIALS_FILE=] [default: .aws/credentials]
+  -h, --help
+          Print help
+  -V, --version
+          Print version
 ```
 
 **mfaws** allows you to customize many things, including the duration of the temporary credentials, the short-term suffix that is used to generate short-term profiles or the path to the credentials file. Many values can also be read from the corresponding environment variables.

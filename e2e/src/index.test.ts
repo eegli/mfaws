@@ -1,5 +1,4 @@
 import test from 'ava';
-import { ExecaError } from 'execa';
 import { buildBin, setupDir, iniToJSON, runBin } from './utils.js';
 
 test.before(async () => {
