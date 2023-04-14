@@ -27,7 +27,7 @@ impl Debug for CredentialsHandler {
 }
 
 impl TryFrom<&Config> for CredentialsHandler {
-    type Error = ini::Error;
+    type Error = anyhow::Error;
     fn try_from(config: &Config) -> Result<CredentialsHandler, Self::Error> {
         CredentialsHandler::from_file(config.credentials_path.as_path())
     }
@@ -41,12 +41,13 @@ impl CredentialsHandler {
         })
     }
 
-    pub fn from_file<P>(path: P) -> Result<Self, ini::Error>
+    pub fn from_file<P>(path: P) -> anyhow::Result<Self>
     where
         P: AsRef<Path>,
     {
         Ok(Self {
-            ini: Ini::load_from_file(path.as_ref())?,
+            ini: Ini::load_from_file(path.as_ref())
+                .map_err(|e| anyhow::anyhow!("Failed to load credentials file: {}", e))?,
             path: Some(path.as_ref().to_path_buf()),
         })
     }

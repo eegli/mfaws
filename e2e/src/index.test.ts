@@ -64,7 +64,7 @@ test.serial('with specific profile', async t => {
 
 test.serial('without mfa device', async t => {
   const { credsPath, cleanup } = setupDir();
-  const childProcess = runBin(
+  const { stderr } = await runBin(
     'session-token',
     '--profile',
     'dev',
@@ -72,14 +72,13 @@ test.serial('without mfa device', async t => {
     credsPath
   );
 
-  const { stderr } = await childProcess;
   t.regex(stderr, /No MFA device found for "dev"/);
   cleanup();
 });
 
 test.serial('with invalid profile', async t => {
   const { credsPath, cleanup } = setupDir();
-  const childProcess = runBin(
+  const { stderr } = await runBin(
     'session-token',
     '--profile',
     'notexists',
@@ -87,14 +86,13 @@ test.serial('with invalid profile', async t => {
     credsPath
   );
 
-  const { stderr } = await childProcess;
   t.regex(stderr, /Profile "notexists" not found/);
   cleanup();
 });
 
 test.serial('with invalid short-term suffix', async t => {
   const { credsPath, cleanup } = setupDir();
-  const childProcess = runBin(
+  const { stderr } = await runBin(
     'session-token',
     '--profile',
     'dev-short-term',
@@ -102,33 +100,19 @@ test.serial('with invalid short-term suffix', async t => {
     credsPath
   );
 
-  const { stderr } = await childProcess;
   t.regex(stderr, /Profile name cannot end with the short-term suffix/);
   cleanup();
 });
 
-// Credentials are validated as part of the CLI argument parsing using
-// clap. Clap will exit the process with a non-zero exit code if the
-// credentials are invalid as opposed to a graceful exit for all other
-// errors
 test.serial('with invalid credentials', async t => {
   const { cleanup } = setupDir();
-  const childProcess = runBin(
+  const { stderr } = await runBin(
     'session-token',
     '--credentials-path',
     '/dev/null'
   );
 
-  t.plan(3);
-
-  try {
-    await childProcess;
-  } catch (err) {
-    const { stderr, exitCode, failed } = err as ExecaError;
-    t.is(exitCode, 2);
-    t.truthy(failed);
-    t.regex(stderr, /Not a valid credentials file/);
-  }
+  t.regex(stderr, /Failed to load credentials file/);
 
   cleanup();
 });
