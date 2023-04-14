@@ -1,4 +1,5 @@
 import test from 'ava';
+import { ExecaError } from 'execa';
 import { buildBin, setupDir, iniToJSON, runBin } from './utils.js';
 
 test.before(async () => {
@@ -71,9 +72,6 @@ test.serial('without mfa device', async t => {
     credsPath
   );
 
-  childProcess.stdin?.write('111111');
-  childProcess.stdin?.end();
-
   const { stderr } = await childProcess;
   t.regex(stderr, /No MFA device found for "dev"/);
   cleanup();
@@ -89,22 +87,48 @@ test.serial('with invalid profile', async t => {
     credsPath
   );
 
-  childProcess.stdin?.write('111111');
-  childProcess.stdin?.end();
-
   const { stderr } = await childProcess;
   t.regex(stderr, /Profile "notexists" not found/);
   cleanup();
 });
 
-test.serial('with invalid credentials', async t => {
-  const { cleanup } = setupDir();
-  const childProcess = runBin('session-token', '--credentials-path', 'tmp');
-
-  childProcess.stdin?.write('111111');
-  childProcess.stdin?.end();
+test.serial('with invalid short-term suffix', async t => {
+  const { credsPath, cleanup } = setupDir();
+  const childProcess = runBin(
+    'session-token',
+    '--profile',
+    'dev-short-term',
+    '--credentials-path',
+    credsPath
+  );
 
   const { stderr } = await childProcess;
-  t.regex(stderr, /The credentials file does not exist/);
+  t.regex(stderr, /Profile name cannot end with the short-term suffix/);
+  cleanup();
+});
+
+// Credentials are validated as part of the CLI argument parsing using
+// clap. Clap will exit the process with a non-zero exit code if the
+// credentials are invalid as opposed to a graceful exit for all other
+// errors
+test.serial('with invalid credentials', async t => {
+  const { cleanup } = setupDir();
+  const childProcess = runBin(
+    'session-token',
+    '--credentials-path',
+    '/dev/null'
+  );
+
+  t.plan(3);
+
+  try {
+    await childProcess;
+  } catch (err) {
+    const { stderr, exitCode, failed } = err as ExecaError;
+    t.is(exitCode, 2);
+    t.truthy(failed);
+    t.regex(stderr, /Not a valid credentials file/);
+  }
+
   cleanup();
 });

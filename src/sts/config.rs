@@ -47,7 +47,7 @@ impl CommonStsConfig {
 
     fn validate_profile_name(&self) -> anyhow::Result<()> {
         if self.profile_name.ends_with(&self.short_term_suffix) {
-            anyhow::bail!("The profile name cannot end with the short-term suffix");
+            anyhow::bail!("Profile name cannot end with the short-term suffix");
         }
         Ok(())
     }
