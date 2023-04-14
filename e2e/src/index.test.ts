@@ -92,7 +92,7 @@ test.serial('with invalid profile', async t => {
   cleanup();
 });
 
-test.serial('with invalid short-term suffix', async t => {
+test.serial.only('with invalid short-term suffix', async t => {
   const { credsPath, cleanup } = setupDir();
   console.log(credsPath);
   const childProcess = runBin(
