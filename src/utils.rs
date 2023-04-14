@@ -34,7 +34,7 @@ pub fn confirm_prompt(msg: &str) -> bool {
 
 pub fn get_input(msg: &str) -> anyhow::Result<String> {
     let mut input = String::new();
-    println!("{:?}", msg);
+    println!("{}", msg);
     std::io::stdin().read_line(&mut input)?;
     input = input.trim().to_owned();
     Ok(input)
