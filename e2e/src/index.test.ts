@@ -109,7 +109,7 @@ test.serial('with invalid credentials', async t => {
   const { stderr } = await runBin(
     'session-token',
     '--credentials-path',
-    '/dev/null'
+    'doesnotexist'
   );
 
   t.regex(stderr, /Failed to load credentials file/);
