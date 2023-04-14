@@ -134,7 +134,7 @@ Options:
 mfaws assume-role --help
 ```
 
-```
+```shell
 Temporary credentials for an assumed AWS IAM Role
 
 Usage: mfaws assume-role [OPTIONS] --role-arn <ROLE_ARN>
@@ -142,7 +142,6 @@ Usage: mfaws assume-role [OPTIONS] --role-arn <ROLE_ARN>
 Options:
       --role-arn <ROLE_ARN>
           The ARN of the AWS IAM Role you want to assume
-
 
           [default: mfa-user]
 
