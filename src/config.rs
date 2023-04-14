@@ -20,8 +20,6 @@ fn valid_credentials_path(s: &str) -> Result<PathBuf, String> {
             .ok_or_else(|| format!("Cannot find home directory"))?
             .join(path.as_path());
     }
-    if !path.exists() {
-        return Err(format!("Not a valid credentials file",));
-    }
+
     Ok(path)
 }
