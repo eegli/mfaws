@@ -8,7 +8,7 @@ pub struct Clean {
     #[arg(
         long = "short-term-suffix",
         default_value = "short-term",
-        help = "To identify the auto-generated short-term credential profile"
+        help = "To identify the short-term credential profiles"
     )]
     pub short_term_suffix: String,
 }

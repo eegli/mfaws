@@ -232,13 +232,13 @@ mfaws clean --help
 ```
 
 ```
-Remove temporary short-time profiles from your credentials file. You'll be prompted to confirm the deletion
+Remove short-time profiles from your credentials file. You'll be prompted to confirm the deletion
 
 Usage: mfaws clean [OPTIONS]
 
 Options:
       --short-term-suffix <SHORT_TERM_SUFFIX>
-          To identify the auto-generated short-term credential profile [default: short-term]
+          To identify the short-term credential profiles [default: short-term]
       --credentials-path <CREDENTIALS_PATH>
           Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file [env: AWS_SHARED_CREDENTIALS_FILE=] [default: .aws/credentials]
   -h, --help
