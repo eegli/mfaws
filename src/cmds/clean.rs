@@ -7,7 +7,6 @@ use crate::{cmds::Command, config::Config, creds::CredentialsHandler};
 pub struct Clean {
     #[arg(
         long = "short-term-suffix",
-        global = true,
         default_value = "short-term",
         help = "To identify the auto-generated short-term credential profile"
     )]
