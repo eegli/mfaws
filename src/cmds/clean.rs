@@ -19,16 +19,22 @@ impl Command for Clean {
         let mut creds_handler = CredentialsHandler::try_from(config)?;
         let sections =
             creds_handler.get_profiles_matching(|p| p.ends_with(&self.short_term_suffix));
+        if sections.is_empty() {
+            info!("No short-term profiles found");
+            return Ok(());
+        }
         info!("Do you want to delete the following short-term profiles?");
         for section in &sections {
             println!("{}", section);
         }
-        if confirm_prompt("Delete profiles") {
+        if confirm_prompt("Confirm deletion") {
             for section in sections {
                 creds_handler.ini.delete(Some(&section));
             }
             info!("Successfully deleted short-term profiles");
             creds_handler.to_file()?;
+        } else {
+            info!("Aborted deletion");
         }
         Ok(())
     }

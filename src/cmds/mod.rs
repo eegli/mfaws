@@ -30,8 +30,7 @@ pub enum SubCommand {
     )]
     GetSessionToken(SessionToken),
     #[clap(
-        hide = true,
-        about = "Remove all temporary profiles from your credentials"
+        about = "Remove all temporary short-time profiles from your credentials file. You'll be prompted to confirm the deletion"
     )]
     Clean(Clean),
     #[clap(about = "List all profiles in your credentials file")]

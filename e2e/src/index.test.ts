@@ -9,10 +9,8 @@ test.before(async () => {
 test.serial('session-token with default profile', async t => {
   const { credsPath, cleanup } = setupDir();
   const childProcess = runBin('session-token', '--credentials-path', credsPath);
-
   childProcess.stdin?.write('111111');
   childProcess.stdin?.end();
-
   const { stdout } = await childProcess;
   t.regex(stdout, /Successfully added short-term credentials/);
   t.snapshot(iniToJSON(credsPath));
@@ -30,10 +28,8 @@ test.serial('assume-role with custom name', async t => {
     '--credentials-path',
     credsPath
   );
-
   childProcess.stdin?.write('111111');
   childProcess.stdin?.end();
-
   await childProcess;
   const { stdout } = await childProcess;
   t.regex(stdout, /Successfully added short-term credentials/);
@@ -52,10 +48,8 @@ test.serial('with specific profile', async t => {
     '--credentials-path',
     credsPath
   );
-
   childProcess.stdin?.write('111111');
   childProcess.stdin?.end();
-
   const { stdout } = await childProcess;
   t.regex(stdout, /Successfully added short-term credentials "dev-short-term"/);
   cleanup();
@@ -70,7 +64,6 @@ test.serial('without mfa device', async t => {
     '--credentials-path',
     credsPath
   );
-
   t.regex(stderr, /No MFA device found for "dev"/);
   cleanup();
 });
@@ -84,7 +77,6 @@ test.serial('with invalid profile', async t => {
     '--credentials-path',
     credsPath
   );
-
   t.regex(stderr, /Profile "notexists" not found/);
   cleanup();
 });
@@ -112,6 +104,53 @@ test.serial('with invalid credentials', async t => {
   );
 
   t.regex(stderr, /Failed to load credentials file/);
+  cleanup();
+});
 
+test.serial('list profiles', async t => {
+  const { cleanup, credsPath } = setupDir();
+  const { stdout } = await runBin('list', '--credentials-path', credsPath);
+  t.regex(stdout, /Found 2 AWS credential profiles:\ndefault\ndev/);
+  cleanup();
+});
+
+test.serial('cleanup', async t => {
+  const { cleanup, credsPath } = setupDir();
+  // Assert empty credentials
+  {
+    const { stdout } = await runBin('clean', '--credentials-path', credsPath);
+    t.regex(stdout, /No short-term profiles found/);
+  }
+  // Create credentials
+  {
+    const childProcess = runBin(
+      'session-token',
+      '--credentials-path',
+      credsPath
+    );
+    childProcess.stdin?.write('111111');
+    childProcess.stdin?.end();
+    await childProcess;
+    t.assert(iniToJSON(credsPath)['default-short-term'] !== undefined);
+  }
+  // Abort removing credentials
+  {
+    const childProcess = runBin('clean', '--credentials-path', credsPath);
+    childProcess.stdin?.write('n');
+    childProcess.stdin?.end();
+    const { stdout } = await childProcess;
+    t.regex(stdout, /Aborted deletion/);
+    t.assert(iniToJSON(credsPath)['default-short-term'] !== undefined);
+  }
+
+  // Actually remove credentials
+  {
+    const childProcess = runBin('clean', '--credentials-path', credsPath);
+    childProcess.stdin?.write('y');
+    childProcess.stdin?.end();
+    const { stdout } = await childProcess;
+    t.regex(stdout, /Successfully deleted short-term profiles/);
+    t.assert(iniToJSON(credsPath)['default-short-term'] === undefined);
+  }
   cleanup();
 });
