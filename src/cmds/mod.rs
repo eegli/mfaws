@@ -1,13 +1,14 @@
 use async_trait::async_trait;
 
 use crate::{
-    cmds::clean::Clean,
+    cmds::{clean::Clean, list::List},
     config::Config,
     sts::{assume_role::AssumeRole, session_token::SessionToken},
 };
 
 pub mod assume_role;
 pub mod clean;
+pub mod list;
 pub mod session_token;
 
 #[async_trait]
@@ -33,4 +34,6 @@ pub enum SubCommand {
         about = "Remove all temporary profiles from your credentials"
     )]
     Clean(Clean),
+    #[clap(about = "List all profiles in your credentials file")]
+    List(List),
 }

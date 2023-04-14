@@ -22,6 +22,7 @@ async fn run() -> anyhow::Result<()> {
         SubCommand::AssumeRole(cmd) => cmd.exec(&config).await?,
         SubCommand::GetSessionToken(cmd) => cmd.exec(&config).await?,
         SubCommand::Clean(cmd) => cmd.exec(&config).await?,
+        SubCommand::List(cmd) => cmd.exec(&config).await?,
     };
     Ok(())
 }
