@@ -136,9 +136,11 @@ test.serial('cleanup', async t => {
   // Abort removing credentials
   {
     const childProcess = runBin('clean', '--credentials-path', credsPath);
+
     childProcess.stdin?.write('n');
     childProcess.stdin?.end();
     const { stdout } = await childProcess;
+    t.regex(stdout, /default-short-term/);
     t.regex(stdout, /Aborted deletion/);
     t.assert(iniToJSON(credsPath)['default-short-term'] !== undefined);
   }
@@ -150,7 +152,10 @@ test.serial('cleanup', async t => {
     childProcess.stdin?.end();
     const { stdout } = await childProcess;
     t.regex(stdout, /Successfully deleted short-term profiles/);
-    t.assert(iniToJSON(credsPath)['default-short-term'] === undefined);
+    const newIni = iniToJSON(credsPath);
+    t.assert(newIni['default-short-term'] === undefined);
+    t.assert(newIni['dev'] !== undefined);
+    t.assert(newIni['default'] !== undefined);
   }
   cleanup();
 });
