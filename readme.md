@@ -11,6 +11,7 @@ Supported STS operations:
 
 - Assume multiple short-term profiles for a single long-term profile
 - A single native binary - no dependency on Python
+- Pass the one-time password (OTP) as a flag argument
 - Utility commands to manage short-term profiles
 
 If you're migrating and curious, read the section about the differences: [Migrating from `aws-mfa`: What's different?](#migrating-from-aws-mfa-whats-different)
@@ -67,10 +68,10 @@ aws_session_token=IQoJb3JpZ2luX2VjECoaCXVzLWVhc3QtMSJHMEUCIDSFI50`
 
 ```
 
-- **Assume a role** for profile `dev`:
+- **Assume a role** for profile `dev` and pass the otp as an argument:
 
 ```shell
-mfaws assume-role --profile dev --role-arn arn:aws:iam::6823sdf5:role/admin --device arn:aws:iam::3687901:mfa/my-mfa-device
+mfaws assume-role --profile dev --role-arn arn:aws:iam::6823sdf5:role/admin --device arn:aws:iam::3687901:mfa/my-mfa-device --otp 123456
 ```
 
 Now, your AWS config file looks like this:
@@ -242,6 +243,7 @@ Options:
 2. Unlike `aws-mfa`, where actions (AssumeRole/GetSessionToken) are implicitly given by the presence of the `--assume-role` flag, **mfaws** has dedicated sub-commands for each operation
 3. `--assume-role` is `--role-arn`
 4. `--role-session-name [NAME]` does not use the [login name of your user](https://docs.python.org/3/library/getpass.html) by default but the static string `mfa-user`
+5. Some environment variables have different names
 
 ## Contributing and Notes
 
