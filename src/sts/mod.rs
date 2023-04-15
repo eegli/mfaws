@@ -54,7 +54,12 @@ where
             ),
         }
     };
-    let mfa_token = get_input("Enter MFA code:")?;
+    let mfa_token = config
+        .otp
+        .clone()
+        .or_else(|| get_input("Enter MFA code:").ok())
+        .unwrap_or_default();
+
     cmd.log_action();
     let st_profile = cmd.get_credentials(&config, mfa_token, &lt_profile).await?;
 
