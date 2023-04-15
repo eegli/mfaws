@@ -3,10 +3,6 @@ cmds.sh
 
 **/dist
 **/node_modules
-**/.pnp.*
-**/.yarn/*
-**/!.yarn/patches
-**/!.yarn/plugins
-**/!.yarn/releases
-**/!.yarn/sdks
-**/!.yarn/versions
+
+# Auto-generated CLI output for the readme
+help

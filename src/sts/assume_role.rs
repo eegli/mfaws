@@ -11,12 +11,14 @@ use crate::{
 pub struct AssumeRole {
     #[arg(
         long = "role-arn",
+        env = "AWS_ROLE_ARN",
         help = "The ARN of the AWS IAM Role you want to assume"
     )]
     pub role_arn: String,
     #[arg(
         long = "role-session-name",
         default_value = "mfa-user",
+        env = "AWS_ROLE_SESSION_NAME",
         help = "Custom friendly session name when assuming a role"
     )]
     pub role_name: String,

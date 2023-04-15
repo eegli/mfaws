@@ -115,6 +115,8 @@ Usage: mfaws.exe [OPTIONS] <COMMAND>
 Commands:
   assume-role    Temporary credentials for an assumed AWS IAM Role
   session-token  Temporary credentials for an AWS IAM user
+  clean          Remove short-time profiles from your credentials file
+  list           List profiles in your credentials file
   help           Print this message or the help of the given subcommand(s)
 
 Options:
@@ -141,41 +143,25 @@ Usage: mfaws assume-role [OPTIONS] --role-arn <ROLE_ARN>
 
 Options:
       --role-arn <ROLE_ARN>
-          The ARN of the AWS IAM Role you want to assume
-
-          [default: mfa-user]
-
+          The ARN of the AWS IAM Role you want to assume [env: AWS_ROLE_ARN=]
+      --role-session-name <ROLE_NAME>
+          Custom friendly session name when assuming a role [env: AWS_ROLE_SESSION_NAME=] [default: mfa-user]
       --profile <PROFILE_NAME>
-          The AWS credentials profile to use
-
-          [env: AWS_PROFILE=]
-          [default: default]
-
-      --credentials-path <CREDENTIALS_PATH>
-          Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file
-
-          [env: AWS_SHARED_CREDENTIALS_FILE=]
-          [default: .aws/credentials]
-
+          The AWS credentials profile to use [env: AWS_PROFILE=] [default: default]
       --device <MFA_DEVICE>
-          The MFA Device ARN. This value can also be provided via the ~/.aws/credentials variable 'aws_mfa_device'
-
-          [env: MFA_DEVICE=]
-
+          The MFA Device ARN [env: MFA_DEVICE=]
+      --credentials-path <CREDENTIALS_PATH>
+          Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file [env: AWS_SHARED_CREDENTIALS_FILE=] [default: .aws/credentials]
+      --otp <OTP>
+          The one-time password from your MFA device
       --duration <DURATION>
-          The duration, in seconds, for which the temporary credentials should remain valid. Defaults to 43200 (12 hours) for session tokens and 3600 (one hour) when assuming a role
-          [env: MFA_STS_DURATION=]
-
+          The duration, in seconds, for which the temporary credentials should remain valid [env: MFA_DURATION=]
       --short-term-suffix <SHORT_TERM_SUFFIX>
-          To identify the auto-generated short-term credential profile by [<profile_name>-SHORT_TERM_SUFFIX]
-
-          [default: short-term]
-
+          To identify the auto-generated short-term credential profile [default: short-term]
       --force
           Force the creation of a new short-term profile even if one already exists
-
   -h, --help
-          Print help (see a summary with '-h')
+          Print help
 ```
 
 ### `session-token`
@@ -191,37 +177,21 @@ Usage: mfaws session-token [OPTIONS]
 
 Options:
       --profile <PROFILE_NAME>
-          The AWS credentials profile to use
-
-          [env: AWS_PROFILE=]
-          [default: default]
-
+          The AWS credentials profile to use [env: AWS_PROFILE=] [default: default]
       --device <MFA_DEVICE>
-          The MFA Device ARN. This value can also be provided via the ~/.aws/credentials variable 'aws_mfa_device'
-
-          [env: MFA_DEVICE=]
-
+          The MFA Device ARN [env: MFA_DEVICE=]
+      --otp <OTP>
+          The one-time password from your MFA device
       --duration <DURATION>
-          The duration, in seconds, for which the temporary credentials should remain valid. Defaults to 43200 (12 hours) for session tokens and 3600 (one hour) when assuming a role
-
-          [env: MFA_STS_DURATION=]
-
+          The duration, in seconds, for which the temporary credentials should remain valid [env: MFA_DURATION=]
       --credentials-path <CREDENTIALS_PATH>
-          Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file
-
-          [env: AWS_SHARED_CREDENTIALS_FILE=]
-          [default: .aws/credentials]
-
+          Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file [env: AWS_SHARED_CREDENTIALS_FILE=] [default: .aws/credentials]
       --short-term-suffix <SHORT_TERM_SUFFIX>
-          To identify the auto-generated short-term credential profile by [<profile_name>-SHORT_TERM_SUFFIX]
-
-          [default: short-term]
-
+          To identify the auto-generated short-term credential profile [default: short-term]
       --force
           Force the creation of a new short-term profile even if one already exists
-
   -h, --help
-          Print help (see a summary with '-h')
+          Print help
 ```
 
 ### `clean`
