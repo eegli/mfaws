@@ -7,18 +7,14 @@ pub struct CommonStsConfig {
         help = "The AWS credentials profile to use"
     )]
     pub profile_name: String,
-    #[arg(
-        long = "device",
-        env = "MFA_DEVICE",
-        help = "The MFA Device ARN. This value can also be provided via the ~/.aws/credentials variable 'aws_mfa_device'"
-    )]
+    #[arg(long = "device", env = "MFA_DEVICE", help = "The MFA Device ARN")]
     pub mfa_device: Option<String>,
     #[arg(long, help = "The one-time password from your MFA device")]
     pub otp: Option<String>,
     #[arg(
         long,
         env = "MFA_DURATION",
-        help = "The duration, in seconds, for which the temporary credentials should remain valid. Defaults to 43200 (12 hours) for session tokens and 3600 (one hour) when assuming a role"
+        help = "The duration, in seconds, for which the temporary credentials should remain valid"
     )]
     pub duration: Option<i32>,
     #[arg(

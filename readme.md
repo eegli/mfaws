@@ -149,13 +149,13 @@ Options:
       --profile <PROFILE_NAME>
           The AWS credentials profile to use [env: AWS_PROFILE=] [default: default]
       --device <MFA_DEVICE>
-          The MFA Device ARN. This value can also be provided via the ~/.aws/credentials variable 'aws_mfa_device' [env: MFA_DEVICE=]
+          The MFA Device ARN [env: MFA_DEVICE=]
       --credentials-path <CREDENTIALS_PATH>
           Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file [env: AWS_SHARED_CREDENTIALS_FILE=] [default: .aws/credentials]
       --otp <OTP>
           The one-time password from your MFA device
       --duration <DURATION>
-          The duration, in seconds, for which the temporary credentials should remain valid. Defaults to 43200 (12 hours) for session tokens and 3600 (one hour) when assuming a role [env: MFA_DURATION=]
+          The duration, in seconds, for which the temporary credentials should remain valid [env: MFA_DURATION=]
       --short-term-suffix <SHORT_TERM_SUFFIX>
           To identify the auto-generated short-term credential profile [default: short-term]
       --force
@@ -179,11 +179,11 @@ Options:
       --profile <PROFILE_NAME>
           The AWS credentials profile to use [env: AWS_PROFILE=] [default: default]
       --device <MFA_DEVICE>
-          The MFA Device ARN. This value can also be provided via the ~/.aws/credentials variable 'aws_mfa_device' [env: MFA_DEVICE=]
+          The MFA Device ARN [env: MFA_DEVICE=]
       --otp <OTP>
           The one-time password from your MFA device
       --duration <DURATION>
-          The duration, in seconds, for which the temporary credentials should remain valid. Defaults to 43200 (12 hours) for session tokens and 3600 (one hour) when assuming a role [env: MFA_DURATION=]
+          The duration, in seconds, for which the temporary credentials should remain valid [env: MFA_DURATION=]
       --credentials-path <CREDENTIALS_PATH>
           Location of the AWS credentials file. Can be a relative path from your home directory or an absolute path to the file [env: AWS_SHARED_CREDENTIALS_FILE=] [default: .aws/credentials]
       --short-term-suffix <SHORT_TERM_SUFFIX>
