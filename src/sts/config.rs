@@ -17,9 +17,8 @@ pub struct CommonStsConfig {
     pub otp: Option<String>,
     #[arg(
         long,
-        env = "MFA_STS_DURATION",
-        help = "The duration, in seconds, for which the temporary credentials should remain valid",
-        long_help = "The duration, in seconds, for which the temporary credentials should remain valid. Defaults to 43200 (12 hours) for session tokens and 3600 (one hour) when assuming a role"
+        env = "MFA_DURATION",
+        help = "The duration, in seconds, for which the temporary credentials should remain valid. Defaults to 43200 (12 hours) for session tokens and 3600 (one hour) when assuming a role"
     )]
     pub duration: Option<i32>,
     #[arg(
