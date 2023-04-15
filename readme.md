@@ -110,7 +110,7 @@ In your terminal, run `mfaws help` to see all (sub)commands and their usage:
 ```
 A CLI tool to manage AWS credentials for MFA-enabled accounts
 
-Usage: mfaws.exe [OPTIONS] <COMMAND>
+Usage: mfaws [OPTIONS] <COMMAND>
 
 Commands:
   assume-role    Temporary credentials for an assumed AWS IAM Role
