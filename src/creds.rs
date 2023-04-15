@@ -106,6 +106,15 @@ impl CredentialsHandler {
         self.ini.section(Some(profile_name))
     }
 
+    pub fn get_profiles_matching(&self, predicate: impl Fn(&str) -> bool) -> Vec<String> {
+        self.ini
+            .sections()
+            .flatten()
+            .filter(|s| predicate(s))
+            .map(|s| s.to_owned())
+            .collect()
+    }
+
     pub fn is_profile_still_valid(&self, profile_name: &str) -> Option<String> {
         self.get_profile(profile_name)
             .and_then(|section| section.get(LongTermProfile::EXPIRATION))

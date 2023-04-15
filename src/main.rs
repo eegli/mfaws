@@ -22,15 +22,15 @@ async fn run() -> anyhow::Result<()> {
         SubCommand::AssumeRole(cmd) => cmd.exec(&config).await?,
         SubCommand::GetSessionToken(cmd) => cmd.exec(&config).await?,
         SubCommand::Clean(cmd) => cmd.exec(&config).await?,
+        SubCommand::List(cmd) => cmd.exec(&config).await?,
     };
     Ok(())
 }
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() {
     logger::init();
     if let Err(err) = run().await {
         error!("{}", err);
     }
-    Ok(())
 }

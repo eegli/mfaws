@@ -1,13 +1,14 @@
 use async_trait::async_trait;
 
 use crate::{
-    cmds::clean::Clean,
+    cmds::{clean::Clean, list::List},
     config::Config,
     sts::{assume_role::AssumeRole, session_token::SessionToken},
 };
 
 pub mod assume_role;
 pub mod clean;
+pub mod list;
 pub mod session_token;
 
 #[async_trait]
@@ -29,8 +30,9 @@ pub enum SubCommand {
     )]
     GetSessionToken(SessionToken),
     #[clap(
-        hide = true,
-        about = "Remove all temporary profiles from your credentials"
+        about = "Remove short-time profiles from your credentials file. You'll be prompted to confirm the deletion"
     )]
     Clean(Clean),
+    #[clap(about = "List profiles in your credentials file")]
+    List(List),
 }
