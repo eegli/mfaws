@@ -10,7 +10,12 @@ impl Command for List {
     async fn exec(self, config: &Config) -> anyhow::Result<()> {
         let creds_handler = CredentialsHandler::try_from(config)?;
         let sections = creds_handler.ini.sections().flatten().collect::<Vec<_>>();
-        info!("Found {} AWS credential profiles:", sections.len());
+        let info = match sections.len() {
+            0 => format!("No AWS credential profiles found"),
+            1 => format!("Found 1 AWS credential profile:"),
+            _ => format!("Found {} AWS credential profiles:", sections.len()),
+        };
+        info!("{info}");
         for section in sections {
             println!("{}", section);
         }

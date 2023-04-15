@@ -231,7 +231,7 @@ mfaws clean --help
 ```
 
 ```
-Remove short-time profiles from your credentials file. You'll be prompted to confirm the deletion
+Remove short-time profiles from your credentials file
 
 Usage: mfaws clean [OPTIONS]
 

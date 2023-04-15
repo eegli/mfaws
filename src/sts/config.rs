@@ -13,6 +13,8 @@ pub struct CommonStsConfig {
         help = "The MFA Device ARN. This value can also be provided via the ~/.aws/credentials variable 'aws_mfa_device'"
     )]
     pub mfa_device: Option<String>,
+    #[arg(long, help = "The one-time password from your MFA device")]
+    pub otp: Option<String>,
     #[arg(
         long,
         env = "MFA_STS_DURATION",

@@ -29,9 +29,7 @@ pub enum SubCommand {
         about = "Temporary credentials for an AWS IAM user"
     )]
     GetSessionToken(SessionToken),
-    #[clap(
-        about = "Remove short-time profiles from your credentials file. You'll be prompted to confirm the deletion"
-    )]
+    #[clap(about = "Remove short-time profiles from your credentials file")]
     Clean(Clean),
     #[clap(about = "List profiles in your credentials file")]
     List(List),

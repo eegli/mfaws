@@ -55,6 +55,22 @@ test.serial('with specific profile', async t => {
   cleanup();
 });
 
+test.serial('with otp', async t => {
+  const { credsPath, cleanup } = setupDir();
+  const { stdout } = await runBin(
+    'session-token',
+    '--otp',
+    '111111',
+    '--credentials-path',
+    credsPath
+  );
+  t.regex(
+    stdout,
+    /Successfully added short-term credentials "default-short-term"/
+  );
+  cleanup();
+});
+
 test.serial('without mfa device', async t => {
   const { credsPath, cleanup } = setupDir();
   const { stderr } = await runBin(
