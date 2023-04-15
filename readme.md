@@ -50,7 +50,9 @@ aws_secret_access_key=qAnFonnuEUqp
 - Get a **temporary session token** for profile `dev`:
 
 ```shell
-mfaws session-token --profile dev --device arn:aws:iam::3687901:mfa/my-mfa-device
+mfaws session-token \
+    --profile dev \
+    --device arn:aws:iam::3687901:mfa/my-mfa-device
 ```
 
 **mfaws** automatically generates and adds the following short-term profile to your AWS credentials file:
@@ -71,7 +73,11 @@ aws_session_token=IQoJb3JpZ2luX2VjECoaCXVzLWVhc3QtMSJHMEUCIDSFI50`
 - **Assume a role** for profile `dev` and pass the otp as an argument:
 
 ```shell
-mfaws assume-role --profile dev --role-arn arn:aws:iam::6823sdf5:role/admin --device arn:aws:iam::3687901:mfa/my-mfa-device --otp 123456
+mfaws assume-role \
+    --profile dev \
+    --role-arn arn:aws:iam::6823sdf5:role/admin \
+    --device arn:aws:iam::3687901:mfa/my-mfa-device \
+    --otp 123456
 ```
 
 Now, your AWS config file looks like this:
