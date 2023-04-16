@@ -297,11 +297,11 @@ mod test_short_term_profile {
         let section = handler.ini.section(Some(profile_name)).unwrap();
 
         assert!(section.contains_key(ShortTermProfile::ASSUMED_ROLE_ARN));
-        assert!(section.contains_key("assumed_role_id"));
-        assert!(section.contains_key("expiration"));
-        assert!(section.contains_key("aws_access_key_id"));
-        assert!(section.contains_key("aws_secret_access_key"));
-        assert!(section.contains_key("aws_session_token"));
+        assert!(section.contains_key(ShortTermProfile::ASSUMED_ROLE_ID));
+        assert!(section.contains_key(ShortTermProfile::EXPIRATION));
+        assert!(section.contains_key(ShortTermProfile::ACCESS_KEY));
+        assert!(section.contains_key(ShortTermProfile::SECRET_KEY));
+        assert!(section.contains_key(ShortTermProfile::SESSION_TOKEN));
     }
 
     #[test]
@@ -316,10 +316,10 @@ mod test_short_term_profile {
         handler.set_short_term_profile(&profile, profile_name);
         let section = handler.ini.section(Some(profile_name)).unwrap();
         assert!(!section.contains_key(ShortTermProfile::ASSUMED_ROLE_ARN));
-        assert!(!section.contains_key("assumed_role_id"));
-        assert!(section.contains_key("expiration"));
-        assert!(section.contains_key("aws_access_key_id"));
-        assert!(section.contains_key("aws_secret_access_key"));
-        assert!(section.contains_key("aws_session_token"));
+        assert!(!section.contains_key(ShortTermProfile::ASSUMED_ROLE_ID));
+        assert!(section.contains_key(ShortTermProfile::EXPIRATION));
+        assert!(section.contains_key(ShortTermProfile::ACCESS_KEY));
+        assert!(section.contains_key(ShortTermProfile::SECRET_KEY));
+        assert!(section.contains_key(ShortTermProfile::SESSION_TOKEN));
     }
 }
