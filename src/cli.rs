@@ -11,7 +11,7 @@ pub struct Cli {
     pub config: Config,
 }
 
-pub fn parse() -> anyhow::Result<(SubCommand, Config)> {
+pub fn parse() -> (SubCommand, Config) {
     let cli = Cli::parse();
-    Ok((cli.command, cli.config))
+    (cli.command, cli.config)
 }

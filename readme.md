@@ -96,7 +96,7 @@ aws_secret_access_key=iqVoWOI8+l6WVBn8pdCc/JxJ6
 aws_session_token=IQoJb3JpZ2luXS4VhObxKg6p79Pm38C4ahGqcGKw==
 ```
 
-Whenever you run an operation, **mfaws** checks your existing short-term profiles to see if there is still a valid (i.e., not yet expired) profile around. If that is the case, the operation is gracefully aborted and you'll be notified.
+Whenever you run an operation, **mfaws** checks your existing short-term profiles to see if there is still a valid (i.e., not yet expired) profile around. If that is the case, the operation is gracefully aborted and you'll be notified. You can also force new credentials by passing the `--force` flag.
 
 ## Shell Aliases
 
