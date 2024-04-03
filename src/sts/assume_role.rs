@@ -80,10 +80,7 @@ impl ShortTermCredentials for AssumeRole {
         // role_arn returned by STS
         stp.assumed_role_arn = Some(Cow::Borrowed(&self.role_arn));
         // Assumed_role_id is the actual role_id returned by STS
-        stp.assumed_role_id = output
-            .assumed_role_user
-            .map(|v| v.assumed_role_id)
-            .unwrap_or_default();
+        stp.assumed_role_id = output.assumed_role_user.map(|v| v.assumed_role_id);
 
         Ok(stp)
     }

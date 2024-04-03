@@ -76,9 +76,8 @@ pub fn extract_sts_err<T>(err: SdkError<T>) -> anyhow::Error
 where
     T: ProvideErrorMetadata,
 {
-    anyhow::anyhow!(err
-        .meta()
-        .message()
-        .map(String::from)
-        .unwrap_or(format!("Failed to get STS credentials: {}", { err })))
+    anyhow::anyhow!(format!(
+        "Failed to get STS credentials: {}",
+        err.to_string()
+    ))
 }
