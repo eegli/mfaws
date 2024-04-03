@@ -35,7 +35,7 @@ impl ShortTermCredentials for SessionToken {
         lt_profile: &LongTermProfile<'_>,
     ) -> anyhow::Result<ShortTermProfile> {
         let output = lt_profile
-            .create_client()
+            .create_client(config.sts_region.clone())
             .await
             .get_session_token()
             .serial_number(lt_profile.mfa_device.to_string())

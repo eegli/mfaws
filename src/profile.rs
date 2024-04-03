@@ -70,7 +70,7 @@ impl TryFrom<DateTime> for SystemTime {
 }
 
 impl<'a> LongTermProfile<'a> {
-    pub async fn create_client(&self) -> STSClient {
+    pub async fn create_client(&self, region: String) -> STSClient {
         let credentials = AWSCredentials::new(
             self.access_key.clone(),
             self.secret_key.clone(),
@@ -81,7 +81,7 @@ impl<'a> LongTermProfile<'a> {
         let conf = StsConfig::Builder::new()
             .behavior_version(StsConfig::BehaviorVersion::v2023_11_09())
             .credentials_provider(credentials)
-            .region(Some(StsConfig::Region::new("eu-central-5")))
+            .region(Some(StsConfig::Region::new(region)))
             .build();
 
         STSClient::from_conf(conf)

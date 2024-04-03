@@ -62,7 +62,7 @@ impl ShortTermCredentials for AssumeRole {
         lt_profile: &LongTermProfile<'_>,
     ) -> anyhow::Result<ShortTermProfile> {
         let output = lt_profile
-            .create_client()
+            .create_client(config.sts_region.clone())
             .await
             .assume_role()
             .set_role_arn(Some(self.role_arn.clone()))
