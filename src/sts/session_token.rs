@@ -53,7 +53,7 @@ impl ShortTermCredentials for SessionToken {
         &self,
         config: &CommonStsConfig,
         mfa_token: String,
-        lt_profile: &LongTermProfile,
+        lt_profile: &LongTermProfile<'_>,
     ) -> anyhow::Result<ShortTermProfile> {
         Ok(ShortTermProfile {
             access_key: "sts-access-key".to_owned(),
