@@ -1,5 +1,3 @@
-use async_trait::async_trait;
-
 use crate::{
     cmds::Command,
     config::Config,
@@ -7,7 +5,6 @@ use crate::{
     sts::{get_st_profile, session_token::SessionToken},
 };
 
-#[async_trait]
 impl Command for SessionToken {
     async fn exec(mut self, config: &Config) -> anyhow::Result<()> {
         self.config.init()?;

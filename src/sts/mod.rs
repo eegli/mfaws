@@ -1,4 +1,3 @@
-use async_trait::async_trait;
 use aws_sdk_sts::error::{ProvideErrorMetadata, SdkError};
 
 use crate::{
@@ -12,7 +11,6 @@ pub mod assume_role;
 pub mod config;
 pub mod session_token;
 
-#[async_trait]
 pub trait ShortTermCredentials {
     const DEFAULT_DURATION: i32;
 

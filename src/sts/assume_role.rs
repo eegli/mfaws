@@ -1,7 +1,5 @@
 use std::borrow::Cow;
 
-use async_trait::async_trait;
-
 use crate::{
     profile::{LongTermProfile, ShortTermProfile},
     sts::{config::CommonStsConfig, extract_sts_err, ShortTermCredentials},
@@ -26,7 +24,6 @@ pub struct AssumeRole {
     pub config: CommonStsConfig,
 }
 
-#[async_trait]
 impl ShortTermCredentials for AssumeRole {
     const DEFAULT_DURATION: i32 = 3600;
 
@@ -62,7 +59,7 @@ impl ShortTermCredentials for AssumeRole {
         &self,
         config: &CommonStsConfig,
         mfa_token: String,
-        lt_profile: &LongTermProfile,
+        lt_profile: &LongTermProfile<'_>,
     ) -> anyhow::Result<ShortTermProfile> {
         let output = lt_profile
             .create_client()

@@ -1,5 +1,3 @@
-use async_trait::async_trait;
-
 use crate::{
     profile::{LongTermProfile, ShortTermProfile},
     sts::{config::CommonStsConfig, extract_sts_err, ShortTermCredentials},
@@ -11,7 +9,6 @@ pub struct SessionToken {
     pub config: CommonStsConfig,
 }
 
-#[async_trait]
 impl ShortTermCredentials for SessionToken {
     const DEFAULT_DURATION: i32 = 43200;
 
@@ -35,7 +32,7 @@ impl ShortTermCredentials for SessionToken {
         &self,
         config: &CommonStsConfig,
         mfa_token: String,
-        lt_profile: &LongTermProfile,
+        lt_profile: &LongTermProfile<'_>,
     ) -> anyhow::Result<ShortTermProfile> {
         let output = lt_profile
             .create_client()
