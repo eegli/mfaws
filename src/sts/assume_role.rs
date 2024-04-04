@@ -74,15 +74,15 @@ impl ShortTermCredentials for AssumeRole {
             .await
             .map_err(extract_sts_err)?;
 
-        let mut stp = ShortTermProfile::try_from(output.credentials)?;
+        let mut short_term_profile = ShortTermProfile::try_from(output.credentials)?;
 
         // Assumed_role_arn is the user input role_arn, not the actual
         // role_arn returned by STS
-        stp.assumed_role_arn = Some(Cow::Borrowed(&self.role_arn));
+        short_term_profile.assumed_role_arn = Some(Cow::Borrowed(&self.role_arn));
         // Assumed_role_id is the actual role_id returned by STS
-        stp.assumed_role_id = output.assumed_role_user.map(|v| v.assumed_role_id);
+        short_term_profile.assumed_role_id = output.assumed_role_user.map(|v| v.assumed_role_id);
 
-        Ok(stp)
+        Ok(short_term_profile)
     }
 
     #[cfg(feature = "e2e_test")]

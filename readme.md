@@ -12,6 +12,7 @@ Supported STS operations:
 - Assume multiple short-term profiles for a single long-term profile
 - A single native binary - no dependency on Python
 - Pass the one-time password (OTP) as a flag argument
+- Option to set the [STS service endpoint](https://docs.aws.amazon.com/general/latest/gr/sts.html#sts_region)
 - Utility commands to manage short-term profiles
 
 If you're migrating and curious, read the section about the differences: [Migrating from `aws-mfa`: What's different?](#migrating-from-aws-mfa-whats-different)
@@ -70,14 +71,15 @@ aws_session_token=IQoJb3JpZ2luX2VjECoaCXVzLWVhc3QtMSJHMEUCIDSFI50`
 
 ```
 
-- **Assume a role** for profile `dev` and pass the otp as an argument:
+- **Assume a role** for profile `dev`, pass the otp as an argument and use region `eu-central-2`:
 
 ```shell
 mfaws assume-role \
     --profile dev \
     --role-arn arn:aws:iam::6823sdf5:role/admin \
     --device arn:aws:iam::3687901:mfa/my-mfa-device \
-    --otp 123456
+    --otp 123456 \
+    --sts-region eu-central-2
 ```
 
 Now, your AWS config file looks like this:
@@ -167,6 +169,8 @@ Options:
           To identify the auto-generated short-term credential profile [default: short-term]
       --force
           Force the creation of a new short-term profile even if one already exists
+      --sts-region <STS_REGION>
+          The STS region to use for the AWS client [default: us-east-1]
   -h, --help
           Print help
 ```
@@ -197,6 +201,8 @@ Options:
           To identify the auto-generated short-term credential profile [default: short-term]
       --force
           Force the creation of a new short-term profile even if one already exists
+      --sts-region <STS_REGION>
+          The STS region to use for the AWS client [default: us-east-1]
   -h, --help
           Print help
 ```
@@ -239,9 +245,9 @@ Options:
           Print help
 ```
 
-## Roadmap and Todos
+## STS Regions
 
-- As of now, all requests to STS hit `us-east-1` instead of a regional endpoint. Millisecond latency does not really matter for this tool, but it'd be nice being able to specify a custom regional endpoint (or read it from `~/.aws/conf`)
+In most cases, you will not have to speficy the STS endpoint to retrieve temporary credentials. The default region is `us-east-1`. If you need to use a different region, you can set the `--sts-region` flag with a [regional endpoint identifier](https://docs.aws.amazon.com/general/latest/gr/sts.html#sts_region) (_not_ URL). Note that the region configured in `./aws/config` is not used.
 
 ## Migrating from `aws-mfa`: What's different?
 

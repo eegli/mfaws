@@ -31,7 +31,6 @@ pub struct CommonStsConfig {
     pub force_new_credentials: bool,
     #[arg(
         long,
-        global = true,
         default_value = "us-east-1",
         help = "The STS region to use for the AWS client"
     )]
