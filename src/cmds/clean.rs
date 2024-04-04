@@ -1,5 +1,3 @@
-use async_trait::async_trait;
-
 use crate::utils::confirm_prompt;
 use crate::{cmds::Command, config::Config, creds::CredentialsHandler};
 
@@ -13,7 +11,6 @@ pub struct Clean {
     pub short_term_suffix: String,
 }
 
-#[async_trait]
 impl Command for Clean {
     async fn exec(self, config: &Config) -> anyhow::Result<()> {
         let mut creds_handler = CredentialsHandler::try_from(config)?;

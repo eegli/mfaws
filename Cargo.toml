@@ -20,20 +20,14 @@ panic = "abort"
 e2e_test = []
 
 [dependencies]
-anyhow = "1.0.70"
-async-trait = "0.1.68"
-aws-config = "0.55.0"
-aws-credential-types = { version = "0.55.0", features = [
-    "hardcoded-credentials",
-] }
-aws-sdk-sts = "0.25.0"
-aws-smithy-types = "0.55.0"
-clap = { version = "4.2.1", features = ["derive", "env"] }
-dirs = "5.0.0"
-log = "0.4.17"
-rust-ini = { version = "0.18.0", features = ["case-insensitive"] }
-simplelog = "0.12.1"
-thiserror = "1.0.40"
+anyhow = "1.0"
+aws-credential-types = "1.1.8"
+aws-sdk-sts = "1.18.0"
+aws-smithy-types = "1.1.8"
+clap = { version = "4.5.4", features = ["derive", "env"] }
+dirs = "5"
+log = "0.4.21"
+rust-ini = { version = "0.21.0", features = ["case-insensitive"] }
+simplelog = "0.12.2"
+thiserror = "1.0"
 tokio = { version = "1", features = ["full"] }
-
-

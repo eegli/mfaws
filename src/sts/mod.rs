@@ -1,4 +1,3 @@
-use async_trait::async_trait;
 use aws_sdk_sts::error::{ProvideErrorMetadata, SdkError};
 
 use crate::{
@@ -12,7 +11,6 @@ pub mod assume_role;
 pub mod config;
 pub mod session_token;
 
-#[async_trait]
 pub trait ShortTermCredentials {
     const DEFAULT_DURATION: i32;
 
@@ -78,9 +76,8 @@ pub fn extract_sts_err<T>(err: SdkError<T>) -> anyhow::Error
 where
     T: ProvideErrorMetadata,
 {
-    anyhow::anyhow!(err
-        .meta()
-        .message()
-        .map(String::from)
-        .unwrap_or(format!("Failed to get STS credentials: {}", { err })))
+    anyhow::anyhow!(format!(
+        "Failed to get STS credentials: {}",
+        err.to_string()
+    ))
 }

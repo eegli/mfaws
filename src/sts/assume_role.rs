@@ -1,7 +1,5 @@
 use std::borrow::Cow;
 
-use async_trait::async_trait;
-
 use crate::{
     profile::{LongTermProfile, ShortTermProfile},
     sts::{config::CommonStsConfig, extract_sts_err, ShortTermCredentials},
@@ -26,7 +24,6 @@ pub struct AssumeRole {
     pub config: CommonStsConfig,
 }
 
-#[async_trait]
 impl ShortTermCredentials for AssumeRole {
     const DEFAULT_DURATION: i32 = 3600;
 
@@ -62,10 +59,10 @@ impl ShortTermCredentials for AssumeRole {
         &self,
         config: &CommonStsConfig,
         mfa_token: String,
-        lt_profile: &LongTermProfile,
+        lt_profile: &LongTermProfile<'_>,
     ) -> anyhow::Result<ShortTermProfile> {
         let output = lt_profile
-            .create_client()
+            .create_client(config.sts_region.clone())
             .await
             .assume_role()
             .set_role_arn(Some(self.role_arn.clone()))
@@ -77,18 +74,15 @@ impl ShortTermCredentials for AssumeRole {
             .await
             .map_err(extract_sts_err)?;
 
-        let mut stp = ShortTermProfile::try_from(output.credentials)?;
+        let mut short_term_profile = ShortTermProfile::try_from(output.credentials)?;
 
         // Assumed_role_arn is the user input role_arn, not the actual
         // role_arn returned by STS
-        stp.assumed_role_arn = Some(Cow::Borrowed(&self.role_arn));
+        short_term_profile.assumed_role_arn = Some(Cow::Borrowed(&self.role_arn));
         // Assumed_role_id is the actual role_id returned by STS
-        stp.assumed_role_id = output
-            .assumed_role_user
-            .map(|v| v.assumed_role_id)
-            .unwrap_or_default();
+        short_term_profile.assumed_role_id = output.assumed_role_user.map(|v| v.assumed_role_id);
 
-        Ok(stp)
+        Ok(short_term_profile)
     }
 
     #[cfg(feature = "e2e_test")]
@@ -96,7 +90,7 @@ impl ShortTermCredentials for AssumeRole {
         &self,
         config: &CommonStsConfig,
         mfa_token: String,
-        lt_profile: &LongTermProfile,
+        lt_profile: &LongTermProfile<'_>,
     ) -> anyhow::Result<ShortTermProfile> {
         Ok(ShortTermProfile {
             access_key: "sts-access-key".to_owned(),

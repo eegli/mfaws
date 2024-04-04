@@ -1,5 +1,3 @@
-use async_trait::async_trait;
-
 use crate::{
     cmds::{clean::Clean, list::List},
     config::Config,
@@ -11,7 +9,6 @@ pub mod clean;
 pub mod list;
 pub mod session_token;
 
-#[async_trait]
 pub trait Command {
     async fn exec(self, config: &Config) -> anyhow::Result<()>;
 }

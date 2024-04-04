@@ -1,11 +1,9 @@
-use std::{borrow::Cow, ops::Deref, str::FromStr, time::SystemTime};
-
-use aws_config::ConfigLoader;
-use aws_credential_types::Credentials;
+use aws_credential_types::Credentials as AWSCredentials;
 use aws_sdk_sts::{
-    primitives::DateTime as AwsDateTime, types::Credentials as StsCredentials, Client,
+    config as StsConfig, primitives::DateTime as AWSDateTime, types as StsTypes,
+    Client as STSClient,
 };
-use aws_smithy_types::date_time::{ConversionError, DateTimeParseError, Format};
+use std::{borrow::Cow, ops::Deref, str::FromStr, time::SystemTime};
 
 #[derive(Debug, Default)]
 pub struct LongTermProfile<'a> {
@@ -25,7 +23,7 @@ pub struct ShortTermProfile<'a> {
 }
 
 #[derive(Debug, Clone)]
-pub struct DateTime(pub AwsDateTime);
+pub struct DateTime(pub AWSDateTime);
 
 pub trait Profile {
     const ACCESS_KEY: &'static str = "aws_access_key_id";
@@ -42,71 +40,74 @@ impl<'a> Profile for ShortTermProfile<'a> {}
 
 impl Default for DateTime {
     fn default() -> Self {
-        Self(AwsDateTime::from_secs(0))
+        Self(AWSDateTime::from_secs(0))
     }
 }
 
 impl Deref for DateTime {
-    type Target = AwsDateTime;
+    type Target = AWSDateTime;
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
 
 impl FromStr for DateTime {
-    type Err = DateTimeParseError;
+    type Err = aws_smithy_types::date_time::DateTimeParseError;
+
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(Self(AwsDateTime::from_str(s, Format::DateTime)?))
+        Ok(Self(AWSDateTime::from_str(
+            s,
+            aws_smithy_types::date_time::Format::DateTime,
+        )?))
     }
 }
 
 impl TryFrom<DateTime> for SystemTime {
-    type Error = ConversionError;
+    type Error = aws_smithy_types::date_time::ConversionError;
     fn try_from(value: DateTime) -> Result<Self, Self::Error> {
         Ok(value.0.try_into()?)
     }
 }
 
 impl<'a> LongTermProfile<'a> {
-    pub async fn create_client(&self) -> Client {
-        let credentials =
-            Credentials::from_keys(self.access_key.clone(), self.secret_key.clone(), None);
-        let conf = ConfigLoader::default()
+    pub async fn create_client(&self, region: String) -> STSClient {
+        let credentials = AWSCredentials::new(
+            self.access_key.clone(),
+            self.secret_key.clone(),
+            None,
+            None,
+            "_",
+        );
+        let conf = StsConfig::Builder::new()
+            .behavior_version(StsConfig::BehaviorVersion::v2023_11_09())
             .credentials_provider(credentials)
-            .region("us-east-1")
-            .load()
-            .await;
-        Client::new(&conf)
+            .region(Some(StsConfig::Region::new(region)))
+            .build();
+
+        STSClient::from_conf(conf)
     }
 }
 
 impl<'a> ShortTermProfile<'a> {
     pub fn format_expiration(&self) -> String {
-        self.expiration.fmt(Format::DateTime).unwrap()
+        self.expiration
+            .fmt(aws_smithy_types::date_time::Format::DateTime)
+            .unwrap()
     }
 }
 
-impl<'a> TryFrom<Option<StsCredentials>> for ShortTermProfile<'a> {
+impl<'a> TryFrom<Option<StsTypes::Credentials>> for ShortTermProfile<'a> {
     type Error = anyhow::Error;
-    fn try_from(creds: Option<StsCredentials>) -> anyhow::Result<Self> {
+    fn try_from(creds: Option<StsTypes::Credentials>) -> anyhow::Result<Self> {
         let creds = creds.ok_or_else(|| anyhow::anyhow!("Failed to extract STS credentials"))?;
 
-        if let (Some(access_key), Some(secret_key), Some(session_token), Some(expiration)) = (
-            creds.access_key_id,
-            creds.secret_access_key,
-            creds.session_token,
-            creds.expiration,
-        ) {
-            Ok(Self {
-                access_key,
-                secret_key,
-                session_token,
-                expiration: DateTime(expiration),
-                assumed_role_arn: None,
-                assumed_role_id: None,
-            })
-        } else {
-            anyhow::bail!("One or more invalid STS credentials")
-        }
+        Ok(Self {
+            access_key: creds.access_key_id,
+            secret_key: creds.secret_access_key,
+            session_token: creds.session_token,
+            expiration: DateTime(creds.expiration),
+            assumed_role_arn: None,
+            assumed_role_id: None,
+        })
     }
 }

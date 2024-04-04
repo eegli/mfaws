@@ -29,6 +29,12 @@ pub struct CommonStsConfig {
         help = "Force the creation of a new short-term profile even if one already exists"
     )]
     pub force_new_credentials: bool,
+    #[arg(
+        long,
+        default_value = "us-east-1",
+        help = "The STS region to use for the AWS client"
+    )]
+    pub sts_region: String,
 }
 
 impl CommonStsConfig {
