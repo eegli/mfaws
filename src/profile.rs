@@ -79,7 +79,7 @@ impl<'a> LongTermProfile<'a> {
             "_",
         );
         let conf = StsConfig::Builder::new()
-            .behavior_version(StsConfig::BehaviorVersion::v2023_11_09())
+            .behavior_version(StsConfig::BehaviorVersion::v2024_03_28())
             .credentials_provider(credentials)
             .region(Some(StsConfig::Region::new(region)))
             .build();
