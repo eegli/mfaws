@@ -251,15 +251,15 @@ In most cases, you will not have to speficy the STS endpoint to retrieve tempora
 
 ## Migrating from `aws-mfa`: What's different?
 
-1. By default, all profiles are considered long-term profiles unless they end with the short term suffix set by `--short-term-suffix [SHUFFIX]`. There is no such thing as an _explicit_ long-term suffix (hence, also no `--long-term-suffix` flag)
+1. By default, all profiles are considered long-term profiles unless they end with the short term suffix set by `--short-term-suffix [SUFFIX]`. There is no such thing as an _explicit_ long-term suffix (hence, also no `--long-term-suffix` flag)
 2. Unlike `aws-mfa`, where actions (AssumeRole/GetSessionToken) are implicitly given by the presence of the `--assume-role` flag, **mfaws** has dedicated sub-commands for each operation
 3. `--assume-role` is `--role-arn`
 4. `--role-session-name [NAME]` does not use the [login name of your user](https://docs.python.org/3/library/getpass.html) by default but the static string `mfa-user`
 5. Some environment variables have different names
 
-## Contributing and Notes
+## Contributing
 
-I'm still a complete beginner with Rust, and suggestions on how to improve this project and make things prettier are very welcome! Of course, I'm also very happy for general feedback, bugfixes and feature ideas.
+General feedback, bugfixes and feature ideas are very welcome! Please open an issue first.
 
 ## Acknowledgements
 
